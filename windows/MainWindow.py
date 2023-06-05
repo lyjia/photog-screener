@@ -25,9 +25,8 @@ class MainWindow(QMainWindow):
 
     def createMenus(self):
         file_menu = self.menuBar().addMenu("File")
-        file_menu.addAction("New")
-        file_menu.addAction("Open")
-        file_menu.addAction("Save")
+        file_menu.addAction("Scan Folder...")
+        file_menu.addAction("Quit")
 
     def createToolbars(self):
         fileToolbar = self.addToolBar("File")
