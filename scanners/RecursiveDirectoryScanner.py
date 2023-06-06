@@ -24,8 +24,8 @@ class RecursiveDirectoryScanner(QObject):
         logging.info("Beginning scan of %s..." % self.directory)
         for root, dirs, files in os.walk(self.directory):
 
-            files = filter(lambda file: file.endswith('.jpg'), files)
-            count = files.count()
+            files = list(filter(lambda file: file.endswith('.jpg'), files))
+            count = len(files)
             x = 0
 
             for file in files:

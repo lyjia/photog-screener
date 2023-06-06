@@ -14,7 +14,7 @@ class ScannedImage(QStandardItem):
         self.laplacian_threshold = laplacian_threshold
         self.thumbnail_small_size = (thumbnail_size_small, thumbnail_size_small)
         self.thumbnail_large_size = (thumbnail_size_large, thumbnail_size_large)
-        self.interpolation = cv2.CV_INTER_AREA
+        self.interpolation = cv2.INTER_AREA
 
         # analyzed attributes
         self.thumbnail_small = None

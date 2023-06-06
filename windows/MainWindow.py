@@ -85,6 +85,9 @@ class MainWindow(QMainWindow):
             'errored': 0
         }
 
+        self.progress_bar.show()
+        self.filter_bar.update_counts(self.previous_counts)
+
     #############################
     # UI actions
     #############################
@@ -104,7 +107,7 @@ class MainWindow(QMainWindow):
         dialog.setDirectory("G:\\Pictures\\PhotogScreener test folder\\test1")
 
         if dialog.exec_():
-            folderName = dialog.selectedFiles()
+            folderName = dialog.selectedFiles()[0]
             self.start_directory_scan(folderName)
         else:
             logging.info("User cancelled dialog box")
@@ -118,6 +121,7 @@ class MainWindow(QMainWindow):
     def start_directory_scan(self, target_path, options={}):
         self.set_enabled(False)
         self.set_up_for_new_run()
+
 
         self.scanner_thread = QThread()
         self.directory_scanner = RecursiveDirectoryScanner(target_path)
@@ -139,20 +143,21 @@ class MainWindow(QMainWindow):
         self.progress_bar.setMaximum(count)
         pass
 
-    def on_scan_file_scanned(self, scanned_image):
-        self.previous_scan['all'] += scanned_image
+    def on_scan_file_scanned(self, path, scanned_image):
+        self.previous_scan['all'].append( scanned_image )
         self.previous_counts['all'] += 1
 
         if scanned_image.is_blurry:
-            self.previous_scan['blurry'] += scanned_image
+            self.previous_scan['blurry'].append( scanned_image )
             self.previous_counts['blurry'] += 1
 
         if scanned_image.error:
-            self.previous_scan['errored'] += scanned_image
+            self.previous_scan['errored'].append( scanned_image )
             self.previous_counts['errored'] += 1
 
         self.filter_bar.update_counts(self.previous_counts)
 
     def on_scan_complete(self):
         self.set_enabled(True)
-        self.status_label.setText( "Finished scanning %i images." % self.previous_scan['all'].count() )
+        self.progress_bar.hide()
+        self.status_label.setText( "Finished scanning %i images." % len(self.previous_scan['all']) )

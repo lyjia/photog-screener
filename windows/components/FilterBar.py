@@ -10,11 +10,13 @@ class QStringList:
 class FilterBar(QWidget):
     def __init__(self):
         super().__init__()
+
         self.setWindowTitle("Filters")
         self.layout = QVBoxLayout(self)
 
         self.tl = None
         self.blurry = None
+        self.errored = None
 
         self.setup()
 
@@ -39,6 +41,6 @@ class FilterBar(QWidget):
 
     def update_counts(self, counts_hash):
         # self.tl.setText(0, counts_hash['path'])
-        self.tl.setText(1, counts_hash['all'])
-        self.blurry.setText(1, counts_hash['blurry'])
-        self.errored.setText(1, counts_hash['errored'])
+        self.tl.setText(1, str(counts_hash['all']))
+        self.blurry.setText(1, str(counts_hash['blurry']))
+        self.errored.setText(1, str(counts_hash['errored']))
