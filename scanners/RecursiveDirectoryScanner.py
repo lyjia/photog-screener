@@ -1,13 +1,25 @@
 from PySide6.QtCore import QObject, QThread, Signal
 import os, logging
 
+from const import Const
 from models.ScannedImage import ScannedImage
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=Const.LOG_LEVEL)
+
+SUPPORTED_TYPES = ['.jpg', '.jpeg', '.jpe', '.png', '.webp', '.tiff', '.tif']
+
+
 def scan_file(path, file):
     ret = ScannedImage(path, file)
     ret.do_analysis()
     return ret
+
+
+def ends_with_a_readable_type(file):
+    for type in SUPPORTED_TYPES:
+        if file.endswith(type):
+            return True
+    return False
 
 
 class RecursiveDirectoryScanner(QObject):
@@ -24,7 +36,7 @@ class RecursiveDirectoryScanner(QObject):
         logging.info("Beginning scan of %s..." % self.directory)
         for root, dirs, files in os.walk(self.directory):
 
-            files = list(filter(lambda file: file.endswith('.jpg'), files))
+            files = list(filter(lambda fil: ends_with_a_readable_type(fil), files))
             count = len(files)
             x = 0
 

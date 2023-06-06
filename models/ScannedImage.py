@@ -26,7 +26,8 @@ class ScannedImage(QStandardItem):
 
     def do_analysis(self):
         self.cv2_image = self.get_image()
-        self.laplacian_variance = LaplacianBlurDetector(self.image_path, self.cv2_image)
+        self.laplacian_variance = LaplacianBlurDetector(self.image_path,
+                                                        self.cv2_image).get_laplacian_variance()
         self.thumbnail_small = cv2.resize(self.cv2_image, self.thumbnail_small_size, self.interpolation)
         self.thumbnail_large = cv2.resize(self.cv2_image, self.thumbnail_large_size, self.interpolation)
 
