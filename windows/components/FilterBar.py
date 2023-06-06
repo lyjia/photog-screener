@@ -11,8 +11,11 @@ class FilterBar(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Filters")
+        self.layout = QVBoxLayout(self)
+
         self.tl = None
         self.blurry = None
+
         self.setup()
 
     def setup(self):
@@ -20,7 +23,6 @@ class FilterBar(QWidget):
         filterTree.setColumnCount(1)
         filterTree.setHeaderLabels(["Category", "Count"])
 
-        self.layout = QVBoxLayout(self)
         self.layout.addWidget(filterTree)
 
         self.tl = QTreeWidgetItem(filterTree)
@@ -31,8 +33,12 @@ class FilterBar(QWidget):
         self.blurry.setText(0, "Blurry")
         self.blurry.setText(1, "123")
 
-        #self.tl.addChild(self.blurry)
+        self.errored = QTreeWidgetItem(self.tl)
+        self.errored.setText(0, "Errored")
+        self.errored.setText(1, "12")
 
     def update_counts(self, counts_hash):
-        self.tl.setText(0, counts_hash['path'])
-        self.blurry.setText(0, counts_hash['counts_blurry_laplacian'])
+        # self.tl.setText(0, counts_hash['path'])
+        self.tl.setText(1, counts_hash['all'])
+        self.blurry.setText(1, counts_hash['blurry'])
+        self.errored.setText(1, counts_hash['errored'])
