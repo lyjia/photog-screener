@@ -14,9 +14,8 @@ class LaplacianBlurDetector():
 
     def analyze(self):
         self.gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
-        self.variance = self.get_laplacian_variance()
+        self.variance = cv2.Laplacian(self.gray, cv2.CV_64F).var()
 
     def get_laplacian_variance(self):
-        self.variance = cv2.Laplacian(self.gray, cv2.CV_64F).var()
         return self.variance
 

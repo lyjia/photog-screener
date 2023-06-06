@@ -8,7 +8,6 @@ import logging
 
 logging.basicConfig(level=logging.INFO)
 
-
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__()
