@@ -44,3 +44,9 @@ class FilterBar(QWidget):
         self.tl.setText(1, str(counts_hash['all']))
         self.blurry.setText(1, str(counts_hash['blurry']))
         self.errored.setText(1, str(counts_hash['errored']))
+
+    def update_scanned_folder_label(self, path=None):
+        if path:
+            self.tl.setText(0, path)
+        else:
+            self.tl.setText(0, "(Nothing scanned yet)")

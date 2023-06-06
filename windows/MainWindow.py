@@ -73,20 +73,21 @@ class MainWindow(QMainWindow):
 
     def set_up_for_new_run(self, path=None):
         self.previous_scan = {
-            'path':     path,
+            'path':    path,
             'all':     [],
             'blurry':  [],
             'errored': []
         }
 
         self.previous_counts = {
-            'all': 0,
-            'blurry': 0,
+            'all':     0,
+            'blurry':  0,
             'errored': 0
         }
 
         self.progress_bar.show()
         self.filter_bar.update_counts(self.previous_counts)
+        self.filter_bar.update_scanned_folder_label(path)
 
     #############################
     # UI actions
@@ -120,8 +121,7 @@ class MainWindow(QMainWindow):
     #################################
     def start_directory_scan(self, target_path, options={}):
         self.set_enabled(False)
-        self.set_up_for_new_run()
-
+        self.set_up_for_new_run(target_path)
 
         self.scanner_thread = QThread()
         self.directory_scanner = RecursiveDirectoryScanner(target_path)
@@ -136,7 +136,6 @@ class MainWindow(QMainWindow):
         # go!
         self.scanner_thread.start()
 
-
     def on_scan_file_found(self, file_path, x, count):
         self.status_label.setText("Scanning %s..." % file_path)
         self.progress_bar.setValue(x)
@@ -144,15 +143,15 @@ class MainWindow(QMainWindow):
         pass
 
     def on_scan_file_scanned(self, path, scanned_image):
-        self.previous_scan['all'].append( scanned_image )
+        self.previous_scan['all'].append(scanned_image)
         self.previous_counts['all'] += 1
 
         if scanned_image.is_blurry:
-            self.previous_scan['blurry'].append( scanned_image )
+            self.previous_scan['blurry'].append(scanned_image)
             self.previous_counts['blurry'] += 1
 
         if scanned_image.error:
-            self.previous_scan['errored'].append( scanned_image )
+            self.previous_scan['errored'].append(scanned_image)
             self.previous_counts['errored'] += 1
 
         self.filter_bar.update_counts(self.previous_counts)
@@ -160,4 +159,4 @@ class MainWindow(QMainWindow):
     def on_scan_complete(self):
         self.set_enabled(True)
         self.progress_bar.hide()
-        self.status_label.setText( "Finished scanning %i images." % len(self.previous_scan['all']) )
+        self.status_label.setText("Finished scanning %i images." % len(self.previous_scan['all']))

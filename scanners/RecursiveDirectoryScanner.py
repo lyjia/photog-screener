@@ -31,8 +31,11 @@ class RecursiveDirectoryScanner(QObject):
             for file in files:
                 x += 1
                 logging.info("Scanning %s (%i if %i)" % (file, x, count))
+
                 self.file_found.emit(os.path.join(root, file), x, count)
+
                 info = scan_file(root, file)
+
                 self.file_scanned.emit(os.path.join(root, file), info)
 
         self.scan_complete.emit()
