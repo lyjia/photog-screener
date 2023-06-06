@@ -3,7 +3,7 @@ import os
 import numpy as np
 
 
-class LapLacianBlurDetector():
+class LaplacianBlurDetector():
 
     def __init__(self, image_path, threshold):
         self.threshold = threshold
@@ -25,5 +25,5 @@ class LapLacianBlurDetector():
         self.variance = cv2.Laplacian(self.gray, cv2.CV_64F).var()
         return self.variance
 
-    def is_blurry(self, image_path):
-        return self.get_laplacian_variance(self.gray) < self.threshold
+    def is_blurry(self):
+        return self.variance < self.threshold

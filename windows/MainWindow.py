@@ -1,24 +1,13 @@
-import sys
-from PySide6.QtWidgets import QMainWindow, QWidget, QLineEdit, QPushButton, QVBoxLayout, QTableWidget, QTableWidgetItem, \
-    QDockWidget, QTextEdit, QListWidget
-from PySide6.QtGui import QColor, Qt
-from windows.dockables.LeftBar import LeftBar
-colors = [("Red", "#FF0000"),
-          ("Green", "#00FF00"),
-          ("Blue", "#0000FF"),
-          ("Black", "#000000"),
-          ("White", "#FFFFFF"),
-          ("Electric Green", "#41CD52"),
-          ("Dark Blue", "#222840"),
-          ("Yellow", "#F9E56d")]
-
+from PySide6.QtWidgets import QMainWindow, QDockWidget, QListWidget
+from PySide6.QtGui import Qt
+from windows.components.FilterBar import FilterBar
 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__()
-        self.setWindowTitle("Hello")
+        self.setWindowTitle("PhotogScreener by Lyjia")
         self.createMenus()
-        self.createToolbars()
+        #self.createToolbars()
         self.createDockWidgets()
         self.setUpCentralWidget()
         pass
@@ -28,13 +17,22 @@ class MainWindow(QMainWindow):
         file_menu.addAction("Scan Folder...")
         file_menu.addAction("Quit")
 
+        view_menu = self.menuBar().addMenu("View")
+        view_menu.addAction("Image Preview/Info")
+
+        help_menu = self.menuBar().addMenu("Help")
+        help_menu.addAction("About...")
+
     def createToolbars(self):
         fileToolbar = self.addToolBar("File")
 
     def createDockWidgets(self):
-        dockWidget = QDockWidget("Dock Widget", self)
+
+        # create the filter widget
+        dockWidget = QDockWidget("Filters", self)
         dockWidget.setAllowedAreas(Qt.LeftDockWidgetArea)
-        leftBar = LeftBar()
+        dockWidget.setFeatures(QDockWidget.DockWidgetFeature.DockWidgetMovable)
+        leftBar = FilterBar()
         dockWidget.setWidget(leftBar)
         self.addDockWidget(Qt.LeftDockWidgetArea, dockWidget)
 
