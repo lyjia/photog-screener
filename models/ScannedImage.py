@@ -6,7 +6,7 @@ from detectors.LaplacianBlurDetector import LaplacianBlurDetector
 
 
 class ScannedImage(QStandardItem):
-    def __init__(self, path, file, laplacian_threshold=100, thumbnail_size_small=128, thumbnail_size_large=1024):
+    def __init__(self, path, file, laplacian_threshold=100, thumbnail_size_small=192, thumbnail_size_large=1024):
         super().__init__()
         self.image_path = os.path.join(path, file)
         self.label = file
@@ -24,13 +24,17 @@ class ScannedImage(QStandardItem):
 
         self.setText(self.label)
 
+        self.setEditable(False)
+        self.setDragEnabled(False)
+        self.setDropEnabled(False)
+
         # other attrs
         self.error = None
 
     def do_analysis(self):
         self.cv2_image = self.get_image()
         self.laplacian_variance = LaplacianBlurDetector(self.image_path,
-                                                       self.cv2_image).get_laplacian_variance()
+                                                        self.cv2_image).get_laplacian_variance()
 
         thumbnail_small_cv2 = cv2.resize(self.cv2_image, self.thumbnail_small_size, self.interpolation)
         thumbnail_small_arr = np.require(thumbnail_small_cv2, np.uint8, 'C')
@@ -40,13 +44,22 @@ class ScannedImage(QStandardItem):
         thumbnail_large_arr = np.require(thumbnail_large_cv2, np.uint8, 'C')
         thumbnail_large_shape = thumbnail_large_cv2.shape
 
-        self.thumbnail_small = QImage( thumbnail_small_arr.data, thumbnail_small_shape[0], thumbnail_small_shape[1], QImage.Format_RGB888)
-        self.thumbnail_large = QImage( thumbnail_large_arr.data, thumbnail_large_shape[0], thumbnail_large_shape[1], QImage.Format_RGB888)
+        self.thumbnail_small = QImage(thumbnail_small_arr.data, thumbnail_small_shape[0], thumbnail_small_shape[1],
+                                      QImage.Format_RGB888)
+        self.thumbnail_large = QImage(thumbnail_large_arr.data, thumbnail_large_shape[0], thumbnail_large_shape[1],
+                                      QImage.Format_RGB888)
 
         self.setIcon(QPixmap.fromImage(self.thumbnail_small))
 
+        tooltip_path = "Path: %s" % self.image_path
+        tooltip_blur = "Sharpness factor: %i of %i" % (self.laplacian_variance, self.laplacian_threshold)
+        if self.is_blurry():
+            tooltip_blur += " (BLURRY)"
+
+        self.setToolTip( '\n'.join([tooltip_path, tooltip_blur]) )
+
     def is_blurry(self):
-        return self.laplacian_variance < self.laplacian_threshold
+        return (self.laplacian_variance < self.laplacian_threshold)
 
     def get_image(self):
         return cv2.imread(self.image_path)

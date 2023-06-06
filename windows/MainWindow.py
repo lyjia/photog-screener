@@ -170,7 +170,7 @@ class MainWindow(QMainWindow):
         self.previous_scan[Const.CATEGORY.ALL].append(scanned_image)
         self.previous_counts[Const.CATEGORY.ALL] += 1
 
-        if scanned_image.is_blurry:
+        if scanned_image.is_blurry():
             self.previous_scan[Const.CATEGORY.BLURRY].append(scanned_image)
             self.previous_counts[Const.CATEGORY.BLURRY] += 1
 
