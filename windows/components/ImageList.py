@@ -1,6 +1,6 @@
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QStandardItemModel
-from PySide6.QtWidgets import QListWidget, QListView
+from PySide6.QtWidgets import QListWidget, QListView, QAbstractItemView
 
 
 class ImageList(QListView):
@@ -14,6 +14,7 @@ class ImageList(QListView):
         self.setIconSize(QSize(192,192))
         self.setMovement(QListView.Movement.Static)
         self.setResizeMode(QListView.ResizeMode.Adjust)
+        self.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
 
     # you will need to call update_viewed_filter to display selected filter
     # immediately after calling this
