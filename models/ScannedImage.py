@@ -27,6 +27,7 @@ class ScannedImage(QStandardItem):
         self.setEditable(False)
         self.setDragEnabled(False)
         self.setDropEnabled(False)
+        self.setCheckable(True)
 
         # other attrs
         self.error = None
@@ -45,11 +46,11 @@ class ScannedImage(QStandardItem):
         thumbnail_large_shape = thumbnail_large_cv2.shape
 
         self.thumbnail_small = QImage(thumbnail_small_arr.data, thumbnail_small_shape[0], thumbnail_small_shape[1],
-                                      QImage.Format_RGB888)
+                                      QImage.Format_BGR888)
         self.thumbnail_large = QImage(thumbnail_large_arr.data, thumbnail_large_shape[0], thumbnail_large_shape[1],
-                                      QImage.Format_RGB888)
+                                      QImage.Format_BGR888)
 
-        self.setIcon(QPixmap.fromImage(self.thumbnail_small))
+        self.setIcon( QPixmap.fromImage(self.thumbnail_small) )
 
         tooltip_path = "Path: %s" % self.image_path
         tooltip_blur = "Sharpness factor: %i of %i" % (self.laplacian_variance, self.laplacian_threshold)
