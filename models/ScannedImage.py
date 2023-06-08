@@ -26,8 +26,8 @@ class ScannedImage(QStandardItem):
 
         self.cv2_image = None
         self.laplacian_threshold = laplacian_threshold
-        self.thumbnail_small_size = thumbnail_size_small
-        self.thumbnail_large_size = thumbnail_size_large
+        self.thumbnail_small_long_edge = thumbnail_size_small
+        self.thumbnail_large_long_edge = thumbnail_size_large
         self.interpolation = cv2.INTER_AREA
 
         # analyzed attributes
@@ -45,20 +45,34 @@ class ScannedImage(QStandardItem):
         # other attrs
         self.error = None
 
+    def do_stuff(self):
+        self.do_analysis()
+        self.generate_thumbnails()
+        self.generate_tooltip()
+
     def do_analysis(self):
         self.cv2_image = self.get_image()
         self.laplacian_variance = LaplacianBlurDetector(self.image_path,
                                                         self.cv2_image).get_laplacian_variance()
 
-        image_shape = self.cv2_image.shape
-        thumbnail_small_size = get_thumbnail_proportional_size(image_shape, self.thumbnail_small_size)
-        thumbnail_large_size = get_thumbnail_proportional_size(image_shape, self.thumbnail_large_size)
+    def generate_tooltip(self):
+        tooltip_path = "Path: %s" % self.image_path
+        tooltip_blur = "Sharpness factor: %i of %i" % (self.laplacian_variance, self.laplacian_threshold)
+        if self.is_blurry():
+            tooltip_blur += " (BLURRY)"
+        self.setToolTip('\n'.join([tooltip_path, tooltip_blur]))
 
-        thumbnail_small_cv2 = cv2.resize(self.cv2_image, thumbnail_small_size, self.interpolation)
+    def generate_thumbnails(self):
+        image_shape = self.cv2_image.shape
+
+        thumbnail_small_size = get_thumbnail_proportional_size(image_shape, self.thumbnail_small_long_edge)
+        thumbnail_large_size = get_thumbnail_proportional_size(image_shape, self.thumbnail_large_long_edge)
+
+        thumbnail_small_cv2 = cv2.resize(self.cv2_image, thumbnail_small_size, interpolation=self.interpolation)
         thumbnail_small_arr = np.require(thumbnail_small_cv2, np.uint8, 'C')
         thumbnail_small_shape = thumbnail_small_cv2.shape
 
-        thumbnail_large_cv2 = cv2.resize(self.cv2_image, thumbnail_large_size, self.interpolation)
+        thumbnail_large_cv2 = cv2.resize(self.cv2_image, thumbnail_large_size, interpolation=self.interpolation)
         thumbnail_large_arr = np.require(thumbnail_large_cv2, np.uint8, 'C')
         thumbnail_large_shape = thumbnail_large_cv2.shape
 
@@ -68,13 +82,6 @@ class ScannedImage(QStandardItem):
                                       QImage.Format_BGR888)
 
         self.setIcon(QPixmap.fromImage(self.thumbnail_small))
-
-        tooltip_path = "Path: %s" % self.image_path
-        tooltip_blur = "Sharpness factor: %i of %i" % (self.laplacian_variance, self.laplacian_threshold)
-        if self.is_blurry():
-            tooltip_blur += " (BLURRY)"
-
-        self.setToolTip('\n'.join([tooltip_path, tooltip_blur]))
 
     def is_blurry(self):
         return (self.laplacian_variance < self.laplacian_threshold)

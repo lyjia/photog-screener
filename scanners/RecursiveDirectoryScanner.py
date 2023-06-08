@@ -11,7 +11,7 @@ SUPPORTED_TYPES = ['.jpg', '.jpeg', '.jpe', '.png', '.webp', '.tiff', '.tif']
 
 def scan_file(path, file):
     ret = ScannedImage(path, file)
-    ret.do_analysis()
+    ret.do_stuff()
     return ret
 
 
