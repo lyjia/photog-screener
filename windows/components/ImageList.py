@@ -40,3 +40,14 @@ class ImageList(QListView):
             for j in range(self.model.columnCount()):
                 item = self.model.item(i, j)
                 item.setCheckState(Qt.CheckState.Unchecked)
+
+    def get_checked_images(self):
+        toret = []
+
+        for i in range(self.model.rowCount()):
+            for j in range(self.model.columnCount()):
+                item = self.model.item(i, j)
+                if item.checkState() == Qt.CheckState.Checked:
+                    toret += item
+
+        return toret
