@@ -5,6 +5,7 @@ from PySide6.QtGui import Qt
 from const import Const
 from models.ScannedImage import ScannedImage
 from scanners.RecursiveDirectoryScanner import RecursiveDirectoryScanner
+from windows.components.CenterPane import CenterPane
 from windows.components.FilterBar import FilterBar
 import logging
 
@@ -29,6 +30,7 @@ class MainWindow(QMainWindow):
 
         self.filter_bar = None
         self.central_image_list = None
+        self.center_pane = None
 
         self.create_menus()
         self.create_dock_widgets()
@@ -68,14 +70,19 @@ class MainWindow(QMainWindow):
 
     def create_statusbar(self):
         self.statusBar()
+
         self.progress_bar = QProgressBar()
+
         self.status_label = QLabel()
         self.statusBar().addWidget(self.progress_bar)
         self.statusBar().addWidget(self.status_label)
 
+        self.progress_bar.hide()
+
     def set_up_central_image_list(self):
-        self.central_image_list = ImageList()
-        self.setCentralWidget(self.central_image_list)
+        self.center_pane = CenterPane()
+        self.central_image_list = self.center_pane.get_image_list_widget()
+        self.setCentralWidget(self.center_pane)
 
     def set_up_for_new_run(self, path=None):
         self.previous_scan = {
