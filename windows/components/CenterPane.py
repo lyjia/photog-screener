@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QDialogButtonBox
 
 from windows.components.ImageList import ImageList
 from windows.dialogs.MassDeleteConfirmation import MassDeleteConfirmation
@@ -55,4 +55,9 @@ class CenterPane(QWidget):
         slated_for_execution = self.image_list.get_checked_images()
 
         dlg = MassDeleteConfirmation(slated_for_execution)
-        dlg.exec_()
+        clicked = dlg.exec_()
+
+        if clicked == QDialogButtonBox.Ok:
+            pass
+
+

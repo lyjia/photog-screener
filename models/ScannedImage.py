@@ -1,8 +1,14 @@
 import os
 import cv2
 import numpy as np
+import send2trash
 from PySide6.QtGui import QStandardItem, QImage, QPixmap
+
+from const import Const
 from detectors.LaplacianBlurDetector import LaplacianBlurDetector
+import logging
+
+logging.basicConfig(level=Const.LOG_LEVEL)
 
 
 def get_thumbnail_proportional_size(image_shape, long_edge_size):
@@ -69,7 +75,7 @@ class ScannedImage(QStandardItem):
         thumbnail_large_size = get_thumbnail_proportional_size(image_shape, self.thumbnail_large_long_edge)
 
         # proportional resize seems to get corrupted, this is visible on image thumbnails coming out skewed.
-        # problem does not manifest is the destination size is 1:1 ratio
+        # problem does not manifest if the destination size is 1:1 ratio
         # TODO: investigate this
 
         thumbnail_small_cv2 = cv2.resize(self.cv2_image, thumbnail_small_size, interpolation=self.interpolation)
@@ -92,3 +98,15 @@ class ScannedImage(QStandardItem):
 
     def get_image(self):
         return cv2.imread(self.image_path)
+
+    def delete(self):
+        try:
+            logging.info("About to delete %s" % self.image_path)
+            send2trash.send2trash(self.image_path)
+            return True
+        except FileNotFoundError:
+            logging.error("Could not delete %s: file not found!" % self.image_path)
+            return False
+        except:
+            logging.error("Could not delete %s: unknown error!" % self.image_path)
+            return False

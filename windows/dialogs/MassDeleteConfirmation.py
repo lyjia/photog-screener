@@ -1,7 +1,11 @@
+from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QDialog, QDialogButtonBox, QLabel, QVBoxLayout
+
+from const import Const
 
 
 class MassDeleteConfirmation(QDialog):
+
     def __init__(self, target_images):
         super().__init__()
 
@@ -15,7 +19,8 @@ class MassDeleteConfirmation(QDialog):
         self.buttonBox.rejected.connect(self.reject)
 
         self.layout = QVBoxLayout()
-        message = QLabel("You are about to PERMANENTLY DELETE all checked images, are you sure you wish to do this?")
+        message = QLabel(
+            "You are about to send all checked images to the %s, are you sure you wish to do this?" % Const.STR.TRASH)
         self.layout.addWidget(message)
         self.layout.addWidget(self.buttonBox)
         self.setLayout(self.layout)

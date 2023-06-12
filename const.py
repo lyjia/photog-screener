@@ -1,4 +1,5 @@
 import logging
+import os
 
 
 class Const:
@@ -16,4 +17,8 @@ class Const:
     class STR:
         NOTHING_SCANNED = "(Nothing scanned yet.)"
         PATH = "path"
+        if os.name == 'nt':
+            TRASH = "Recycle Bin"
+        else:
+            TRASH = "Trash"
 
