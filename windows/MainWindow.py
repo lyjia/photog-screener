@@ -1,7 +1,8 @@
 from PySide6.QtCore import QThread
 from PySide6.QtWidgets import QMainWindow, QDockWidget, QListWidget, QFileDialog, QProgressBar, QLabel
-from PySide6.QtGui import Qt
+from PySide6.QtGui import Qt, QPixmap, QIcon
 
+from pathlib import Path
 from const import Const
 from models.ScannedImage import ScannedImage
 from scanners.RecursiveDirectoryScanner import RecursiveDirectoryScanner
@@ -20,6 +21,14 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle("PhotogScreener by Lyjia")
 
+        # load window icon
+        # adapted from https://stackoverflow.com/questions/17068003/application-icon-in-pyside-gui
+        pixmap = QPixmap()
+        pixmap.loadFromData( Path('res/icon.png').read_bytes() )
+        appIcon = QIcon(pixmap)
+        self.setWindowIcon(appIcon)
+
+        # setup
         self.directory_scanner = None
         self.scanner_thread = None
         self.status_label = None
@@ -120,7 +129,7 @@ class MainWindow(QMainWindow):
     def file_scan_folder_action(self):
         dialog = QFileDialog(self)
         dialog.setFileMode(QFileDialog.FileMode.Directory)
-        dialog.setDirectory("G:\\Pictures\\PhotogScreener test folder")
+        dialog.setDirectory("T:\\PhotogScreenerTestFolder")
 
         if dialog.exec_():
             folderName = dialog.selectedFiles()[0]
