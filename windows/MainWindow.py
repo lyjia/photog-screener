@@ -155,6 +155,7 @@ class MainWindow(QMainWindow):
         self.set_up_for_new_run(target_path)
 
         self.scanner_thread = QThread()
+        self.scanner_thread.setObjectName("Scan %s" % target_path)
         self.directory_scanner = RecursiveDirectoryScanner(target_path)
         self.directory_scanner.moveToThread(self.scanner_thread)
 
@@ -202,3 +203,4 @@ class MainWindow(QMainWindow):
         self.central_image_list.update_image_lists(self.previous_scan)
         self.central_image_list.update_viewed_filter(self.filter_bar.get_selected_item())
         self.status_label.setText("Finished scanning %i images." % len(self.previous_scan[Const.CATEGORY.ALL]))
+        self.scanner_thread.exit()
