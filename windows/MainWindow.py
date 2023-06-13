@@ -94,6 +94,12 @@ class MainWindow(QMainWindow):
         self.central_image_list = self.center_pane.get_image_list_widget()
         self.setCentralWidget(self.center_pane)
 
+        # set up event handlers for image deletion
+        self.center_pane.deletion_started.connect(self.on_deletion_started)
+        self.center_pane.image_deleted.connect(self.on_image_deleted)
+        self.center_pane.deletion_complete.connect(self.on_deletion_finished)
+
+
     def set_up_for_new_run(self, path=None):
         self.previous_scan = {
             Const.STR.PATH:    path,
@@ -149,7 +155,7 @@ class MainWindow(QMainWindow):
         self.central_image_list.update_viewed_filter(label)
 
     #################################
-    # directory scanner
+    # directory scanner + events
     #################################
     def start_directory_scan(self, target_path, options={}):
         self.set_enabled(False)
@@ -210,3 +216,22 @@ class MainWindow(QMainWindow):
         box = QMessageBox()
         box.setText(message)
         box.exec()
+
+
+    #################################
+    # deletion events
+    #################################
+    def on_deletion_started(self, count):
+        self.set_enabled(False)
+        self.progress_bar.setMaximum(count)
+        self.progress_bar.setValue(0)
+        self.progress_bar.show()
+
+    def on_image_deleted(self, path):
+        self.progress_bar.setValue( self.progress_bar.getValue() + 1 )
+        self.status_label.setText( "Deleted %s!" % path)
+
+    def on_deletion_finished(self, count):
+        self.set_enabled(True)
+        self.status_label.setText("Deleted %i images." % count)
+        self.progress_bar.hide()

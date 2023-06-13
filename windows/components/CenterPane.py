@@ -1,11 +1,17 @@
+from PySide6.QtCore import QThread, Signal
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QDialogButtonBox
 
+from models.ScannedImage import ScannedImage
 from windows.components.ImageList import ImageList
 from windows.dialogs.MassDeleteConfirmation import MassDeleteConfirmation
 from workers.DeletionWorker import DeletionWorker
 
 
 class CenterPane(QWidget):
+
+    deletion_started = Signal(int)
+    image_deleted = Signal(str)
+    deletion_complete = Signal(int)
 
     def __init__(self):
         super().__init__()
@@ -16,6 +22,9 @@ class CenterPane(QWidget):
 
         self.button_pane_right = QHBoxLayout()
         self.button_pane_left = QHBoxLayout()
+
+        self.deletion_thread = None
+        self.deletion_controller = None
 
         self.btn_trash = QPushButton("&Delete")
         self.btn_checkall = QPushButton("&Check all")
@@ -56,9 +65,37 @@ class CenterPane(QWidget):
         slated_for_execution = self.image_list.get_checked_images()
 
         dlg = MassDeleteConfirmation(slated_for_execution)
-        clicked = dlg.exec_()
+        clicked = dlg.exec()
 
-        if clicked == QDialogButtonBox.Ok:
-            pass
+        #if clicked == QDialogButtonBox.Ok: #doesnt work
+        if clicked == 1:
+            self.delete_all_images(slated_for_execution)
 
+    #####################################
+    # image deletion
+    #####################################
+    def delete_all_images(self, to_delete):
+        self.deletion_thread = QThread()
+        self.deletion_controller = DeletionWorker(to_delete)
 
+        self.deletion_controller.moveToThread(self.deletion_thread)
+
+        self.deletion_thread.started.connect(self.deletion_controller.delete_all)
+        self.deletion_controller.deletion_started.connect(self.on_deletion_started)
+        self.deletion_controller.deletion_error.connect(self.on_deletion_error)
+        self.deletion_controller.deletion_completed.connect(self.on_deletion_completed)
+        self.deletion_controller.image_deleted.connect(self.on_image_deleted)
+
+        self.deletion_thread.start()
+
+    def on_deletion_started(self, count):
+        self.deletion_started.emit(count)
+
+    def on_deletion_error(self):
+        pass
+
+    def on_image_deleted(self, image: ScannedImage):
+        self.image_deleted(image.image_path)
+
+    def on_deletion_completed(self):
+        self.deletion_thread.exit()

@@ -48,6 +48,6 @@ class ImageList(QListView):
             for j in range(self.model.columnCount()):
                 item = self.model.item(i, j)
                 if item.checkState() == Qt.CheckState.Checked:
-                    toret += item
+                    toret.append(item)
 
         return toret
