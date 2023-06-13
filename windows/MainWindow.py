@@ -1,11 +1,11 @@
 from PySide6.QtCore import QThread
-from PySide6.QtWidgets import QMainWindow, QDockWidget, QListWidget, QFileDialog, QProgressBar, QLabel
+from PySide6.QtWidgets import QMainWindow, QDockWidget, QListWidget, QFileDialog, QProgressBar, QLabel, QMessageBox
 from PySide6.QtGui import Qt, QPixmap, QIcon
 
 from pathlib import Path
 from const import Const
 from models.ScannedImage import ScannedImage
-from scanners.RecursiveDirectoryScanner import RecursiveDirectoryScanner
+from controllers.RecursiveDirectoryScanController import RecursiveDirectoryScanController
 from windows.components.CenterPane import CenterPane
 from windows.components.FilterBar import FilterBar
 import logging
@@ -156,7 +156,7 @@ class MainWindow(QMainWindow):
 
         self.scanner_thread = QThread()
         self.scanner_thread.setObjectName("Scan %s" % target_path)
-        self.directory_scanner = RecursiveDirectoryScanner(target_path)
+        self.directory_scanner = RecursiveDirectoryScanController(target_path)
         self.directory_scanner.moveToThread(self.scanner_thread)
 
         # connect events
@@ -164,7 +164,6 @@ class MainWindow(QMainWindow):
         self.directory_scanner.file_scanned.connect(self.on_scan_file_scanned)
         self.directory_scanner.scan_complete.connect(self.on_scan_complete)
         self.scanner_thread.started.connect(self.directory_scanner.scan)
-
         # go!
         self.scanner_thread.start()
 

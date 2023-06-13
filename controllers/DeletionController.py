@@ -1,10 +1,11 @@
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Signal, QObject
 
 from models.ScannedImage import ScannedImage
 
 
-class DeletionController:
+class DeletionController(QObject):
     deletion_started = Signal(int)
+    deletion_error = Signal(str)
     image_deleted = Signal(ScannedImage)
     deletion_complete = Signal()
 
@@ -13,12 +14,16 @@ class DeletionController:
         pass
 
     def delete_all(self):
-        total = len(self.slated)
-        self.deletion_started.emit(total)
+        try:
+            total = len(self.slated)
+            self.deletion_started.emit(total)
 
-        for image in self.slated:
-            result = image.delete
-            if result:
-                self.image_deleted.emit(image)
+            for image in self.slated:
+                result = image.delete
+                if result:
+                    self.image_deleted.emit(image)
 
-        self.deletion_complete.emit()
+        except:
+            self.deletion_error.emit("Unknown error deleting %s" % self.image_path)
+        finally:
+            self.deletion_complete.emit()
