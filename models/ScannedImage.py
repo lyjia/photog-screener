@@ -33,15 +33,11 @@ class ScannedImage(QStandardItem):
 
         self.cv2_image = None
         self.laplacian_threshold = laplacian_threshold
-        self.thumbnail_small_long_edge = thumbnail_size_small
-        self.thumbnail_large_long_edge = thumbnail_size_large
         self.interpolation = cv2.INTER_AREA
 
         # analyzed attributes
-        self.thumbnail_small = None
-        self.thumbnail_large = None
         self.thumbnails = {}
-        self.thumbnail_sizes = {'small': 192, 'large': 1024}
+        self.thumbnail_sizes = {'small': thumbnail_size_small, 'large': thumbnail_size_large}
         self.laplacian_variance = None
 
         self.setText(self.label)
