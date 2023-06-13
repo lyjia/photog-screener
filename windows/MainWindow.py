@@ -228,7 +228,7 @@ class MainWindow(QMainWindow):
         self.progress_bar.show()
 
     def on_image_deleted(self, path):
-        self.progress_bar.setValue( self.progress_bar.getValue() + 1 )
+        self.progress_bar.setValue( self.progress_bar.value() + 1 )
         self.status_label.setText( "Deleted %s!" % path)
 
     def on_deletion_finished(self, count):

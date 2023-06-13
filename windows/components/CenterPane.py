@@ -1,11 +1,13 @@
 from PySide6.QtCore import QThread, Signal
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QDialogButtonBox
 
+from const import Const
 from models.ScannedImage import ScannedImage
 from windows.components.ImageList import ImageList
 from windows.dialogs.MassDeleteConfirmation import MassDeleteConfirmation
 from workers.DeletionWorker import DeletionWorker
-
+import logging
+logging.basicConfig(level=Const.LOG_LEVEL)
 
 class CenterPane(QWidget):
 
@@ -76,6 +78,7 @@ class CenterPane(QWidget):
     #####################################
     def delete_all_images(self, to_delete):
         self.deletion_thread = QThread()
+        self.deletion_thread.setObjectName("Delete images")
         self.deletion_controller = DeletionWorker(to_delete)
 
         self.deletion_controller.moveToThread(self.deletion_thread)
@@ -91,8 +94,8 @@ class CenterPane(QWidget):
     def on_deletion_started(self, count):
         self.deletion_started.emit(count)
 
-    def on_deletion_error(self):
-        pass
+    def on_deletion_error(self, str):
+        logging.error(str)
 
     def on_image_deleted(self, image: ScannedImage):
         self.image_deleted.emit(image.image_path)

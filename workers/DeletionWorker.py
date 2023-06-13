@@ -15,8 +15,9 @@ class DeletionWorker(QObject):
         pass
 
     def delete_all(self):
+        total = len(self.slated)
+
         try:
-            total = len(self.slated)
             self.deletion_started.emit(total)
 
             for image in self.slated:
@@ -24,7 +25,7 @@ class DeletionWorker(QObject):
                 if result:
                     self.image_deleted.emit(image)
 
-        except:
-            self.deletion_error.emit("Unknown error deleting %s" % self.image_path)
+        except Exception as e:
+            self.deletion_error.emit("Error while deleting %s: %s" % self.image_path, getattr(e, 'message', repr(e)))
         finally:
             self.deletion_complete.emit()
