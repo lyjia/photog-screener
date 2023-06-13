@@ -1,3 +1,4 @@
+import math
 import os
 import cv2
 import numpy as np
@@ -39,6 +40,8 @@ class ScannedImage(QStandardItem):
         # analyzed attributes
         self.thumbnail_small = None
         self.thumbnail_large = None
+        self.thumbnails = {}
+        self.thumbnail_sizes = {'small': 192, 'large': 1024}
         self.laplacian_variance = None
 
         self.setText(self.label)
@@ -71,29 +74,18 @@ class ScannedImage(QStandardItem):
     def generate_thumbnails(self):
         image_shape = self.cv2_image.shape
 
-        thumbnail_small_size = get_thumbnail_proportional_size(image_shape, self.thumbnail_small_long_edge)
-        thumbnail_large_size = get_thumbnail_proportional_size(image_shape, self.thumbnail_large_long_edge)
+        for key in self.thumbnail_sizes:
+            # proportional resize seems to get corrupted, this is visible on image thumbnails coming out skewed.
+            # problem does not manifest if the destination size is 1:1 ratio
+            # TODO: investigate this
 
-        # proportional resize seems to get corrupted, this is visible on image thumbnails coming out skewed.
-        # problem does not manifest if the destination size is 1:1 ratio
-        # TODO: investigate this
-        # thumbnail_small_size = (self.thumbnail_small_long_edge, self.thumbnail_small_long_edge)
-        # thumbnail_large_size = (self.thumbnail_large_long_edge, self.thumbnail_large_long_edge)
+            thumb_size = get_thumbnail_proportional_size(image_shape, self.thumbnail_sizes[key])
+            thumb_cv2 = cv2.resize(self.cv2_image, thumb_size, interpolation=self.interpolation)
+            thumb_arr = np.require(thumb_cv2, np.uint8, 'C')
+            self.thumbnails[key] = QImage(thumb_arr.data, thumb_size[0], thumb_size[1],
+                                          QImage.Format_BGR888)
 
-        thumbnail_small_cv2 = cv2.resize(self.cv2_image, thumbnail_small_size, interpolation=self.interpolation)
-        thumbnail_small_arr = np.require(thumbnail_small_cv2, np.uint8, 'C')
-        #thumbnail_small_shape = thumbnail_small_cv2.shape
-
-        thumbnail_large_cv2 = cv2.resize(self.cv2_image, thumbnail_large_size, interpolation=self.interpolation)
-        thumbnail_large_arr = np.require(thumbnail_large_cv2, np.uint8, 'C')
-        thumbnail_large_shape = thumbnail_large_cv2.shape
-
-        self.thumbnail_small = QImage(thumbnail_small_arr.data, thumbnail_small_size[0], thumbnail_small_size[1],
-                                      QImage.Format_BGR888)
-        self.thumbnail_large = QImage(thumbnail_large_arr.data, thumbnail_large_shape[0], thumbnail_large_shape[1],
-                                      QImage.Format_BGR888)
-
-        self.setIcon(QPixmap.fromImage(self.thumbnail_small))
+        self.setIcon(QPixmap.fromImage(self.thumbnails['small']))
 
     def is_blurry(self):
         return (self.laplacian_variance < self.laplacian_threshold)
