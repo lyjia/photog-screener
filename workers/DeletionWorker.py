@@ -3,7 +3,7 @@ from PySide6.QtCore import Signal, QObject
 from models.ScannedImage import ScannedImage
 
 
-class DeletionController(QObject):
+class DeletionWorker(QObject):
     deletion_started = Signal(int)
     deletion_error = Signal(str)
     image_deleted = Signal(ScannedImage)

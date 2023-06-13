@@ -5,7 +5,7 @@ from PySide6.QtGui import Qt, QPixmap, QIcon
 from pathlib import Path
 from const import Const
 from models.ScannedImage import ScannedImage
-from controllers.RecursiveDirectoryScanController import RecursiveDirectoryScanController
+from workers.RecursiveDirectoryScanWorker import RecursiveDirectoryScanWorker
 from windows.components.CenterPane import CenterPane
 from windows.components.FilterBar import FilterBar
 import logging
@@ -31,6 +31,7 @@ class MainWindow(QMainWindow):
         # setup
         self.directory_scanner = None
         self.scanner_thread = None
+        self.deleter_thread = None
         self.status_label = None
         self.progress_bar = None
 
@@ -156,13 +157,14 @@ class MainWindow(QMainWindow):
 
         self.scanner_thread = QThread()
         self.scanner_thread.setObjectName("Scan %s" % target_path)
-        self.directory_scanner = RecursiveDirectoryScanController(target_path)
+        self.directory_scanner = RecursiveDirectoryScanWorker(target_path)
         self.directory_scanner.moveToThread(self.scanner_thread)
 
         # connect events
         self.directory_scanner.file_found.connect(self.on_scan_file_found)
         self.directory_scanner.file_scanned.connect(self.on_scan_file_scanned)
         self.directory_scanner.scan_complete.connect(self.on_scan_complete)
+        self.directory_scanner.scan_error.connect(self.on_scan_error)
         self.scanner_thread.started.connect(self.directory_scanner.scan)
         # go!
         self.scanner_thread.start()
@@ -203,3 +205,8 @@ class MainWindow(QMainWindow):
         self.central_image_list.update_viewed_filter(self.filter_bar.get_selected_item())
         self.status_label.setText("Finished scanning %i images." % len(self.previous_scan[Const.CATEGORY.ALL]))
         self.scanner_thread.exit()
+
+    def on_scan_error(self, message):
+        box = QMessageBox()
+        box.setText(message)
+        box.exec()

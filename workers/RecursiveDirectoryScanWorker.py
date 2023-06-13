@@ -22,7 +22,7 @@ def ends_with_a_readable_type(file):
     return False
 
 
-class RecursiveDirectoryScanController(QObject):
+class RecursiveDirectoryScanWorker(QObject):
     file_found = Signal(str, int, int)
     file_scanned = Signal(str, ScannedImage)
     scan_complete = Signal()
