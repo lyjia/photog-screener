@@ -10,6 +10,7 @@ class DeletionWorker(QObject):
     deletion_complete = Signal()
 
     def __init__(self, images_to_delete):
+        super().__init__()
         self.slated = images_to_delete
         pass
 

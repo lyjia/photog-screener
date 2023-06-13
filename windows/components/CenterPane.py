@@ -83,7 +83,7 @@ class CenterPane(QWidget):
         self.deletion_thread.started.connect(self.deletion_controller.delete_all)
         self.deletion_controller.deletion_started.connect(self.on_deletion_started)
         self.deletion_controller.deletion_error.connect(self.on_deletion_error)
-        self.deletion_controller.deletion_completed.connect(self.on_deletion_completed)
+        self.deletion_controller.deletion_complete.connect(self.on_deletion_completed)
         self.deletion_controller.image_deleted.connect(self.on_image_deleted)
 
         self.deletion_thread.start()
@@ -95,7 +95,8 @@ class CenterPane(QWidget):
         pass
 
     def on_image_deleted(self, image: ScannedImage):
-        self.image_deleted(image.image_path)
+        self.image_deleted.emit(image.image_path)
 
     def on_deletion_completed(self):
         self.deletion_thread.exit()
+        self.deletion_complete.emit()
