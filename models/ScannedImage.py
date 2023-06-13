@@ -37,7 +37,7 @@ class ScannedImage(QStandardItem):
 
         # analyzed attributes
         self.thumbnails = {}
-        self.thumbnail_sizes = {'small': thumbnail_size_small, 'large': thumbnail_size_large}
+        self.thumbnail_sizes = {'small': thumbnail_size_small} #, 'large': thumbnail_size_large}
         self.laplacian_variance = None
 
         self.setText(self.label)
@@ -78,8 +78,7 @@ class ScannedImage(QStandardItem):
             thumb_size = get_thumbnail_proportional_size(image_shape, self.thumbnail_sizes[key])
             thumb_cv2 = cv2.resize(self.cv2_image, thumb_size, interpolation=self.interpolation)
             thumb_arr = np.require(thumb_cv2, np.uint8, 'C')
-            self.thumbnails[key] = QImage(thumb_arr.data, thumb_size[0], thumb_size[1],
-                                          QImage.Format_BGR888)
+            self.thumbnails[key] = QImage(thumb_arr.data, thumb_size[0], thumb_size[1], QImage.Format_BGR888)
 
         self.setIcon(QPixmap.fromImage(self.thumbnails['small']))
 
