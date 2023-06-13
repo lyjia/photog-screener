@@ -12,7 +12,7 @@ logging.basicConfig(level=Const.LOG_LEVEL)
 
 
 def get_thumbnail_proportional_size(image_shape, long_edge_size):
-    x, y, _ = image_shape
+    y, x, _ = image_shape
 
     if x > y:
         new_y = (float(long_edge_size) / x) * y
@@ -77,16 +77,18 @@ class ScannedImage(QStandardItem):
         # proportional resize seems to get corrupted, this is visible on image thumbnails coming out skewed.
         # problem does not manifest if the destination size is 1:1 ratio
         # TODO: investigate this
+        # thumbnail_small_size = (self.thumbnail_small_long_edge, self.thumbnail_small_long_edge)
+        # thumbnail_large_size = (self.thumbnail_large_long_edge, self.thumbnail_large_long_edge)
 
         thumbnail_small_cv2 = cv2.resize(self.cv2_image, thumbnail_small_size, interpolation=self.interpolation)
         thumbnail_small_arr = np.require(thumbnail_small_cv2, np.uint8, 'C')
-        thumbnail_small_shape = thumbnail_small_cv2.shape
+        #thumbnail_small_shape = thumbnail_small_cv2.shape
 
         thumbnail_large_cv2 = cv2.resize(self.cv2_image, thumbnail_large_size, interpolation=self.interpolation)
         thumbnail_large_arr = np.require(thumbnail_large_cv2, np.uint8, 'C')
         thumbnail_large_shape = thumbnail_large_cv2.shape
 
-        self.thumbnail_small = QImage(thumbnail_small_arr.data, thumbnail_small_shape[0], thumbnail_small_shape[1],
+        self.thumbnail_small = QImage(thumbnail_small_arr.data, thumbnail_small_size[0], thumbnail_small_size[1],
                                       QImage.Format_BGR888)
         self.thumbnail_large = QImage(thumbnail_large_arr.data, thumbnail_large_shape[0], thumbnail_large_shape[1],
                                       QImage.Format_BGR888)
