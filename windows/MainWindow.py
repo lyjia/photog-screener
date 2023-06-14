@@ -1,6 +1,6 @@
-from PySide6.QtCore import QThread
-from PySide6.QtWidgets import QMainWindow, QDockWidget, QListWidget, QFileDialog, QProgressBar, QLabel, QMessageBox
-from PySide6.QtGui import Qt, QPixmap, QIcon
+from PySide6.QtCore import QThread, QCoreApplication
+from PySide6.QtWidgets import QMainWindow, QDockWidget, QListWidget, QFileDialog, QProgressBar, QLabel, QMessageBox, QStyleFactory
+from PySide6.QtGui import Qt, QPixmap, QIcon, QAction
 
 from pathlib import Path
 import const
@@ -11,12 +11,13 @@ from windows.components.FilterBar import FilterBar
 import logging
 
 from windows.components.ImageList import ImageList
+from preferences import prefs
 
 logging.basicConfig(level=const.LOG_LEVEL)
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, style=None):
         super().__init__()
 
         self.setWindowTitle("PhotogScreener by Lyjia")
@@ -27,6 +28,8 @@ class MainWindow(QMainWindow):
         pixmap.loadFromData( Path('res/icon.png').read_bytes() )
         appIcon = QIcon(pixmap)
         self.setWindowIcon(appIcon)
+
+        self.current_style = style
 
         # setup
         self.directory_scanner = None
@@ -55,11 +58,21 @@ class MainWindow(QMainWindow):
 
     def create_menus(self):
         file_menu = self.menuBar().addMenu("&File")
-        file_menu.addAction("&Scan Folder...").triggered.connect(self.file_scan_folder_action)
-        file_menu.addAction("&Quit").triggered.connect(self.file_quit_action)
+        file_menu.addAction("&Scan Folder...").triggered.connect(self.on_file_scan_folder_action)
+        file_menu.addAction("&Quit").triggered.connect(self.on_file_quit_action)
 
         view_menu = self.menuBar().addMenu("&View")
         view_menu.addAction("&Image Preview/Info")
+
+        options_menu = self.menuBar().addMenu("&Options")
+        styles_menu = options_menu.addMenu("&Theme")
+
+        for style in QStyleFactory.keys():
+            act = styles_menu.addAction(style)
+            if style is self.current_style:
+                act.setCheckable(True)
+                act.setChecked(True)
+            act.triggered.connect(self.on_options_theme_select)
 
         help_menu = self.menuBar().addMenu("&Help")
         help_menu.addAction("&About...")
@@ -133,7 +146,7 @@ class MainWindow(QMainWindow):
     # menu actions
     #################
 
-    def file_scan_folder_action(self):
+    def on_file_scan_folder_action(self):
         dialog = QFileDialog(self)
         dialog.setFileMode(QFileDialog.FileMode.Directory)
         dialog.setDirectory("T:\\PhotogScreenerTestFolder")
@@ -144,8 +157,24 @@ class MainWindow(QMainWindow):
         else:
             logging.info("User cancelled dialog box")
 
-    def file_quit_action(self):
+    def on_file_quit_action(self):
         exit(0)
+
+    def on_options_theme_select(self):
+        newstyle = self.sender().text()
+
+        if newstyle != self.current_style:
+            msgbox = QMessageBox()
+            msgbox.setText("%s must be restarted to apply this style. Do this now?" % const.APP.NAME)
+            msgbox.setStandardButtons(QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel)
+            msgbox.setIcon( QMessageBox.Icon.Question )
+            msgbox.setDefaultButton(QMessageBox.StandardButton.Ok)
+            ret = msgbox.exec()
+            if ret == QMessageBox.StandardButton.Ok:
+                prefs().set_pref(const.PREFS.GLOBAL.NAME, const.PREFS.GLOBAL.APPSTYLE, newstyle)
+                QCoreApplication.exit( const.APP.EXIT_CODE_RESTART )
+            else:
+                self.sender().setChecked(True)
 
     ##########################
     # control actions

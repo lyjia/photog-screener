@@ -1,18 +1,33 @@
 import sys
+
+from PySide6.QtCore import QCoreApplication
 from PySide6.QtWidgets import QApplication
 from windows.MainWindow import MainWindow
-from const import APP
-import preferences
+from const import APP, PREFS
+from preferences import configure, prefs
 
 if __name__ == '__main__':
     # Create the Qt Application
-    app = QApplication(sys.argv)
+    while True:
 
-    preferences.configure( APP.NAME, APP.AUTHOR )
+        try:
+            app = QApplication(sys.argv)
+        except RuntimeError:
+            app = QCoreApplication.instance()
 
-    # Create and show the form
-    form = MainWindow()
-    form.show()
+        configure( APP.NAME, APP.AUTHOR )
 
-    # Run the main Qt loop
-    sys.exit(app.exec())
+        style = prefs().get_pref(PREFS.GLOBAL.NAME, PREFS.GLOBAL.APPSTYLE)
+        if style is not None:
+            app.setStyle( style )
+
+        # Create and show the form
+        form = MainWindow( style=app.style() )
+        form.show()
+
+        # Run the main Qt loop
+        exit_code = app.exec()
+        if exit_code != APP.EXIT_CODE_RESTART:
+            sys.exit(exit_code)
+        else:
+            del app

@@ -26,3 +26,9 @@ class STR:
 class APP:
     NAME = "PhotogScreener"
     AUTHOR = "Lyjia"
+    EXIT_CODE_RESTART = 42069
+
+class PREFS:
+    class GLOBAL:
+        NAME = "global"
+        APPSTYLE = "appstyle"
