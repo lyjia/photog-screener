@@ -88,7 +88,7 @@ class ScannedImage(QStandardItem):
     def get_image(self):
         return cv2.imread(self.image_path)
 
-    def delete(self):
+    def trash_image(self):
         try:
             logging.info("About to delete %s" % self.image_path)
             send2trash.send2trash(self.image_path)

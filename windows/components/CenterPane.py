@@ -102,4 +102,4 @@ class CenterPane(QWidget):
 
     def on_deletion_completed(self):
         self.deletion_thread.exit()
-        self.deletion_complete.emit()
+        self.deletion_complete.emit(0)

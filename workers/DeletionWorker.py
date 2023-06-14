@@ -1,6 +1,10 @@
 from PySide6.QtCore import Signal, QObject
 
+from const import Const
 from models.ScannedImage import ScannedImage
+import logging
+logging.basicConfig(level=Const.LOG_LEVEL)
+
 
 
 class DeletionWorker(QObject):
@@ -17,11 +21,13 @@ class DeletionWorker(QObject):
     def delete_all(self):
         total = len(self.slated)
 
+        logging.info("Slated to delete %i iamges, starting..." % total)
+
         try:
             self.deletion_started.emit(total)
 
             for image in self.slated:
-                result = image.delete
+                result = image.trash_image
                 if result:
                     self.image_deleted.emit(image)
 
