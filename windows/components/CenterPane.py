@@ -1,7 +1,7 @@
 from PySide6.QtCore import QThread, Signal
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QDialogButtonBox
 
-from const import const
+import const
 from models.ScannedImage import ScannedImage
 from windows.components.ImageList import ImageList
 from windows.dialogs.MassDeleteConfirmation import MassDeleteConfirmation

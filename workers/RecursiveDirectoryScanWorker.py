@@ -1,7 +1,7 @@
 from PySide6.QtCore import QObject, QThread, Signal
 import os, logging
 
-from const import const
+import const
 from models.ScannedImage import ScannedImage
 
 logging.basicConfig(level=const.LOG_LEVEL)

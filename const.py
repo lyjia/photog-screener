@@ -11,7 +11,7 @@ class CATEGORY:
 
     @staticmethod
     def keys():
-        return CATEGORY.__dict__["__doc__"]
+        return [CATEGORY.ALL, CATEGORY.BLURRY, CATEGORY.ERRORED]
 
 
 class STR:

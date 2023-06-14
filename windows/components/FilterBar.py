@@ -4,7 +4,7 @@ from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QWidget, QTreeWidget, QTreeWidgetItem, QVBoxLayout
 from PySide6.QtGui import QColor, Qt
 
-from const import const
+import const
 
 
 class QStringList:

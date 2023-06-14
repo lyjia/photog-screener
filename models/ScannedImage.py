@@ -5,7 +5,7 @@ import numpy as np
 import send2trash
 from PySide6.QtGui import QStandardItem, QImage, QPixmap
 
-from const import const
+import const
 from detectors.LaplacianBlurDetector import LaplacianBlurDetector
 import logging
 
