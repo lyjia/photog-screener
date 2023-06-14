@@ -6,9 +6,17 @@ from appdirs import AppDirs
 from pathlib import Path, PurePath
 import os
 
-prefs = None
+prefs_internal = None
+
+
 def configure(appname=None, appauthor=None, version=None, prefsfilename=None):
-    prefs = Preferences(appname, appauthor, version, prefsfilename)
+    global prefs_internal
+    prefs_internal = Preferences(appname, appauthor, version, prefsfilename)
+
+
+def prefs():
+    return prefs_internal
+
 
 class Preferences:
     def __init__(self, appname, appauthor, version=None, prefsfilename=None):
@@ -20,7 +28,7 @@ class Preferences:
         self.app_name = appname
         self.app_author = appauthor
 
-        self.pref_hash = {}
+        self.prefs_hash = {}
 
         if version is not None:
             self.appdirs = AppDirs(self.app_name, self.app_author, version=version)
@@ -33,7 +41,7 @@ class Preferences:
             with open(self.prefs_fullpath) as fil:
                 self.prefs_hash = toml.loads(fil.read())
         except FileNotFoundError:
-            pass #dont need to do anything
+            pass  # dont need to do anything
 
     def get_user_data_dir(self):
         return self.appdirs.user_data_dir
@@ -52,8 +60,15 @@ class Preferences:
     ###################################
 
     def get_pref(self, category, keyname, default_value=None):
-        if self.prefs_hash[category] or self.prefs_hash[category][keyname] is None:
+        if category not in self.prefs_hash:
+            self.prefs_hash[category] = {}
+
+        if keyname not in self.prefs_hash[category]:
+            self.prefs_hash[category][keyname] = None
+
+        if self.prefs_hash[category][keyname] is None:
             return default_value
+
         return self.prefs_hash[category][keyname]
 
     def set_pref(self, category, keyname, value, persist=True):
@@ -66,7 +81,7 @@ class Preferences:
             self.persist()
 
     def persist(self):
-        os.makedirs( self.get_user_data_dir(), exist_ok=True)
+        os.makedirs(self.get_user_data_dir(), exist_ok=True)
 
         with open(self.prefs_fullpath, 'w') as file:
-            file.print( toml.dump( self.prefs_hash ) )
+            file.write( toml.dumps(self.prefs_hash) )
