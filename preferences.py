@@ -6,16 +6,16 @@ from appdirs import AppDirs
 from pathlib import Path, PurePath
 import os
 
-prefs_internal = None
+_prefs_internal = None
 
 
 def configure(appname=None, appauthor=None, version=None, prefsfilename=None):
-    global prefs_internal
-    prefs_internal = Preferences(appname, appauthor, version, prefsfilename)
+    global _prefs_internal
+    _prefs_internal = Preferences(appname, appauthor, version, prefsfilename)
 
 
 def prefs():
-    return prefs_internal
+    return _prefs_internal
 
 
 class Preferences:
@@ -84,4 +84,4 @@ class Preferences:
         os.makedirs(self.get_user_data_dir(), exist_ok=True)
 
         with open(self.prefs_fullpath, 'w') as file:
-            file.write( toml.dumps(self.prefs_hash) )
+            file.write(toml.dumps(self.prefs_hash))
