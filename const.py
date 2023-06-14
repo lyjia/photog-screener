@@ -28,7 +28,19 @@ class APP:
     AUTHOR = "Lyjia"
     EXIT_CODE_RESTART = 42069
 
+
 class PREFS:
     class GLOBAL:
         NAME = "global"
-        APPSTYLE = "appstyle"
+        APPSTYLE = "app style"
+        ON_REMOVAL_ACTION = "on removal"
+
+
+class MENU:
+    class ON_REMOVAL:
+        TO_TRASH = "Send to %s" % STR.TRASH
+        DELETE = "Delete"
+
+        @staticmethod
+        def keys():
+            return [MENU.ON_REMOVAL.TO_TRASH, MENU.ON_REMOVAL.DELETE]

@@ -5,6 +5,10 @@ import toml
 from appdirs import AppDirs
 from pathlib import Path, PurePath
 import os
+import logging
+import const
+
+logging.basicConfig(level=const.LOG_LEVEL)
 
 _prefs_internal = None
 
@@ -67,14 +71,19 @@ class Preferences:
             self.prefs_hash[category][keyname] = None
 
         if self.prefs_hash[category][keyname] is None:
+            logging.info("Preference lookup for '%s'.'%s' has no value, returning default value: %s (%s)" % (
+                category, keyname, default_value, default_value.__class__.__name__))
             return default_value
 
-        return self.prefs_hash[category][keyname]
+        value = self.prefs_hash[category][keyname]
+        logging.info("Preference lookup for '%s'.'%s', returning value: %s (%s)" % (category, keyname, value, value.__class__.__name__))
+        return value
 
     def set_pref(self, category, keyname, value, persist=True):
         if self.prefs_hash[category] is None:
             self.prefs_hash[category] = {}
 
+        logging.info("Preference '%s'.'%s' set to: %s (%s)" % (category, keyname, value, value.__class__.__name__))
         self.prefs_hash[category][keyname] = value
 
         if persist is True:

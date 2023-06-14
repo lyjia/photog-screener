@@ -1,5 +1,6 @@
 from PySide6.QtCore import QThread, QCoreApplication
-from PySide6.QtWidgets import QMainWindow, QDockWidget, QListWidget, QFileDialog, QProgressBar, QLabel, QMessageBox, QStyleFactory
+from PySide6.QtWidgets import QMainWindow, QDockWidget, QListWidget, QFileDialog, QProgressBar, QLabel, QMessageBox, \
+    QStyleFactory
 from PySide6.QtGui import Qt, QPixmap, QIcon, QAction
 
 from pathlib import Path
@@ -25,10 +26,9 @@ class MainWindow(QMainWindow):
         # load window icon
         # adapted from https://stackoverflow.com/questions/17068003/application-icon-in-pyside-gui
         pixmap = QPixmap()
-        pixmap.loadFromData( Path('res/icon.png').read_bytes() )
+        pixmap.loadFromData(Path('res/icon.png').read_bytes())
         appIcon = QIcon(pixmap)
         self.setWindowIcon(appIcon)
-
         self.current_style = style
 
         # setup
@@ -65,12 +65,21 @@ class MainWindow(QMainWindow):
         view_menu.addAction("&Image Preview/Info")
 
         options_menu = self.menuBar().addMenu("&Options")
-        styles_menu = options_menu.addMenu("&Theme")
+        on_delete_menu = options_menu.addMenu("When &removing")
+        for item in const.MENU.ON_REMOVAL.keys():
+            act = on_delete_menu.addAction(item)
+            act.setCheckable(True)
+            act.triggered.connect(self.on_options_removal_select)
+            if prefs().get_pref(const.PREFS.GLOBAL.NAME, const.PREFS.GLOBAL.ON_REMOVAL_ACTION,
+                                const.MENU.ON_REMOVAL.TO_TRASH) == item:
+                act.setChecked(True)
 
+        options_menu.addSeparator()
+        styles_menu = options_menu.addMenu("&Theme")
         for style in QStyleFactory.keys():
             act = styles_menu.addAction(style)
-            if style is self.current_style:
-                act.setCheckable(True)
+            act.setCheckable(True)
+            if style.lower() == self.current_style.name().lower():
                 act.setChecked(True)
             act.triggered.connect(self.on_options_theme_select)
 
@@ -112,10 +121,9 @@ class MainWindow(QMainWindow):
         self.center_pane.image_deleted.connect(self.on_image_deleted)
         self.center_pane.deletion_complete.connect(self.on_deletion_finished)
 
-
     def set_up_for_new_run(self, path=None):
         self.previous_scan = {
-            const.STR.PATH:    path,
+            const.STR.PATH:         path,
             const.CATEGORY.ALL:     [],
             const.CATEGORY.BLURRY:  [],
             const.CATEGORY.ERRORED: []
@@ -167,14 +175,17 @@ class MainWindow(QMainWindow):
             msgbox = QMessageBox()
             msgbox.setText("%s must be restarted to apply this style. Do this now?" % const.APP.NAME)
             msgbox.setStandardButtons(QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel)
-            msgbox.setIcon( QMessageBox.Icon.Question )
+            msgbox.setIcon(QMessageBox.Icon.Question)
             msgbox.setDefaultButton(QMessageBox.StandardButton.Ok)
             ret = msgbox.exec()
             if ret == QMessageBox.StandardButton.Ok:
                 prefs().set_pref(const.PREFS.GLOBAL.NAME, const.PREFS.GLOBAL.APPSTYLE, newstyle)
-                QCoreApplication.exit( const.APP.EXIT_CODE_RESTART )
-            else:
-                self.sender().setChecked(True)
+                QCoreApplication.exit(const.APP.EXIT_CODE_RESTART)
+
+    def on_options_removal_select(self):
+        target = self.sender().text()
+        prefs().set_pref(const.PREFS.GLOBAL.NAME, const.PREFS.GLOBAL.ON_REMOVAL_ACTION, target)
+
 
     ##########################
     # control actions
@@ -246,7 +257,6 @@ class MainWindow(QMainWindow):
         box.setText(message)
         box.exec()
 
-
     #################################
     # deletion events
     #################################
@@ -257,8 +267,8 @@ class MainWindow(QMainWindow):
         self.progress_bar.show()
 
     def on_image_deleted(self, path):
-        self.progress_bar.setValue( self.progress_bar.value() + 1 )
-        self.status_label.setText( "Deleted %s!" % path)
+        self.progress_bar.setValue(self.progress_bar.value() + 1)
+        self.status_label.setText("Deleted %s!" % path)
 
     def on_deletion_finished(self, count):
         self.set_enabled(True)

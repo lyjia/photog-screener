@@ -90,12 +90,12 @@ class ScannedImage(QStandardItem):
 
     def trash_image(self):
         try:
-            logging.info("About to delete %s" % self.image_path)
             send2trash.send2trash(self.image_path)
+            logging.info("Trashed %s!" % self.image_path)
             return True
         except FileNotFoundError:
-            logging.error("Could not delete %s: file not found!" % self.image_path)
+            logging.error("Could not trash %s: file not found!" % self.image_path)
             return False
         except:
-            logging.error("Could not delete %s: unknown error!" % self.image_path)
+            logging.error("Could not trash %s: unknown error!" % self.image_path)
             return False

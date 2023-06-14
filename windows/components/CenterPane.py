@@ -28,7 +28,7 @@ class CenterPane(QWidget):
         self.deletion_thread = None
         self.deletion_controller = None
 
-        self.btn_trash = QPushButton("&Delete")
+        self.btn_trash = QPushButton("&Remove")
         self.btn_checkall = QPushButton("&Check all")
         self.btn_uncheckall = QPushButton("&Uncheck all")
 
