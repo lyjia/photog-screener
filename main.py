@@ -7,9 +7,7 @@ from const import APP, PREFS
 from preferences import configure, prefs
 
 if __name__ == '__main__':
-    # Create the Qt Application
     while True:
-
         try:
             app = QApplication(sys.argv)
         except RuntimeError:
