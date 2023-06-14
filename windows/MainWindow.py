@@ -3,7 +3,7 @@ from PySide6.QtWidgets import QMainWindow, QDockWidget, QListWidget, QFileDialog
 from PySide6.QtGui import Qt, QPixmap, QIcon
 
 from pathlib import Path
-from const import Const
+import const
 from models.ScannedImage import ScannedImage
 from workers.RecursiveDirectoryScanWorker import RecursiveDirectoryScanWorker
 from windows.components.CenterPane import CenterPane
@@ -12,7 +12,7 @@ import logging
 
 from windows.components.ImageList import ImageList
 
-logging.basicConfig(level=Const.LOG_LEVEL)
+logging.basicConfig(level=const.LOG_LEVEL)
 
 
 class MainWindow(QMainWindow):
@@ -102,16 +102,16 @@ class MainWindow(QMainWindow):
 
     def set_up_for_new_run(self, path=None):
         self.previous_scan = {
-            Const.STR.PATH:    path,
-            Const.CATEGORY.ALL:     [],
-            Const.CATEGORY.BLURRY:  [],
-            Const.CATEGORY.ERRORED: []
+            const.STR.PATH:    path,
+            const.CATEGORY.ALL:     [],
+            const.CATEGORY.BLURRY:  [],
+            const.CATEGORY.ERRORED: []
         }
 
         self.previous_counts = {
-            Const.CATEGORY.ALL:     0,
-            Const.CATEGORY.BLURRY:  0,
-            Const.CATEGORY.ERRORED: 0
+            const.CATEGORY.ALL:     0,
+            const.CATEGORY.BLURRY:  0,
+            const.CATEGORY.ERRORED: 0
         }
 
         self.progress_bar.show()
@@ -191,16 +191,16 @@ class MainWindow(QMainWindow):
                 "I got back a %s instead of ScannedImage! WTF mate??? Skipping!" % type(scanned_image).__name__)
             return
 
-        self.previous_scan[Const.CATEGORY.ALL].append(scanned_image)
-        self.previous_counts[Const.CATEGORY.ALL] += 1
+        self.previous_scan[const.CATEGORY.ALL].append(scanned_image)
+        self.previous_counts[const.CATEGORY.ALL] += 1
 
         if scanned_image.is_blurry():
-            self.previous_scan[Const.CATEGORY.BLURRY].append(scanned_image)
-            self.previous_counts[Const.CATEGORY.BLURRY] += 1
+            self.previous_scan[const.CATEGORY.BLURRY].append(scanned_image)
+            self.previous_counts[const.CATEGORY.BLURRY] += 1
 
         if scanned_image.error:
-            self.previous_scan[Const.CATEGORY.ERRORED].append(scanned_image)
-            self.previous_counts[Const.CATEGORY.ERRORED] += 1
+            self.previous_scan[const.CATEGORY.ERRORED].append(scanned_image)
+            self.previous_counts[const.CATEGORY.ERRORED] += 1
 
         self.filter_bar.update_counts(self.previous_counts)
 
@@ -209,7 +209,7 @@ class MainWindow(QMainWindow):
         self.progress_bar.hide()
         self.central_image_list.update_image_lists(self.previous_scan)
         self.central_image_list.update_viewed_filter(self.filter_bar.get_selected_item())
-        self.status_label.setText("Finished scanning %i images." % len(self.previous_scan[Const.CATEGORY.ALL]))
+        self.status_label.setText("Finished scanning %i images." % len(self.previous_scan[const.CATEGORY.ALL]))
         self.scanner_thread.exit()
 
     def on_scan_error(self, message):

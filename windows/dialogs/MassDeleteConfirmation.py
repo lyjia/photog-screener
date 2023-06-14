@@ -1,7 +1,7 @@
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QDialog, QDialogButtonBox, QLabel, QVBoxLayout
 
-from const import Const
+from const import const
 
 
 class MassDeleteConfirmation(QDialog):
@@ -20,7 +20,7 @@ class MassDeleteConfirmation(QDialog):
 
         self.layout = QVBoxLayout()
         message = QLabel(
-            "You are about to send all checked images to the %s, are you sure you wish to do this?" % Const.STR.TRASH)
+            "You are about to send all checked images to the %s, are you sure you wish to do this?" % const.STR.TRASH)
         self.layout.addWidget(message)
         self.layout.addWidget(self.buttonBox)
         self.setLayout(self.layout)

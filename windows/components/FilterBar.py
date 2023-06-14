@@ -4,7 +4,7 @@ from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QWidget, QTreeWidget, QTreeWidgetItem, QVBoxLayout
 from PySide6.QtGui import QColor, Qt
 
-from const import Const
+from const import const
 
 
 class QStringList:
@@ -35,24 +35,24 @@ class FilterBar(QWidget):
         self.layout.addWidget(self.filter_tree)
 
         self.tl = QTreeWidgetItem(self.filter_tree)
-        self.tl.setText(0, Const.STR.NOTHING_SCANNED)
+        self.tl.setText(0, const.STR.NOTHING_SCANNED)
         self.tl.setText(1, "0")
 
         self.blurry = QTreeWidgetItem(self.tl)
-        self.blurry.setText(0, Const.CATEGORY.BLURRY)
+        self.blurry.setText(0, const.CATEGORY.BLURRY)
         self.blurry.setText(1, "0")
 
         self.errored = QTreeWidgetItem(self.tl)
-        self.errored.setText(0, Const.CATEGORY.ERRORED)
+        self.errored.setText(0, const.CATEGORY.ERRORED)
         self.errored.setText(1, "0")
 
         self.filter_tree.itemSelectionChanged.connect(self.on_tree_widget_selection_changed)
 
     def update_counts(self, counts_hash):
         # self.tl.setText(0, counts_hash['path'])
-        self.tl.setText(1, str(counts_hash[Const.CATEGORY.ALL]))
-        self.blurry.setText(1, str(counts_hash[Const.CATEGORY.BLURRY]))
-        self.errored.setText(1, str(counts_hash[Const.CATEGORY.ERRORED]))
+        self.tl.setText(1, str(counts_hash[const.CATEGORY.ALL]))
+        self.blurry.setText(1, str(counts_hash[const.CATEGORY.BLURRY]))
+        self.errored.setText(1, str(counts_hash[const.CATEGORY.ERRORED]))
 
     def update_scanned_folder_label(self, path=None):
         if path:
@@ -69,10 +69,10 @@ class FilterBar(QWidget):
         if len(items) is not 0:
             selected = items[0].text(0)
         else:
-            selected = Const.CATEGORY.ALL
+            selected = const.CATEGORY.ALL
 
-        if selected not in list(Const.CATEGORY.keys()):
-            selected = Const.CATEGORY.ALL
+        if selected not in list(const.CATEGORY.keys()):
+            selected = const.CATEGORY.ALL
 
         return selected
 

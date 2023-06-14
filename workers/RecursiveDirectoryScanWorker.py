@@ -1,10 +1,10 @@
 from PySide6.QtCore import QObject, QThread, Signal
 import os, logging
 
-from const import Const
+from const import const
 from models.ScannedImage import ScannedImage
 
-logging.basicConfig(level=Const.LOG_LEVEL)
+logging.basicConfig(level=const.LOG_LEVEL)
 
 SUPPORTED_TYPES = ['.jpg', '.jpeg', '.jpe', '.png', '.webp', '.tiff', '.tif']
 

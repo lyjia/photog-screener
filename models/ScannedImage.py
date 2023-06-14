@@ -5,11 +5,11 @@ import numpy as np
 import send2trash
 from PySide6.QtGui import QStandardItem, QImage, QPixmap
 
-from const import Const
+from const import const
 from detectors.LaplacianBlurDetector import LaplacianBlurDetector
 import logging
 
-logging.basicConfig(level=Const.LOG_LEVEL)
+logging.basicConfig(level=const.LOG_LEVEL)
 
 
 def get_thumbnail_proportional_size(image_shape, long_edge_size):
