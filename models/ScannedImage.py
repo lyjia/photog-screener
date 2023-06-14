@@ -71,9 +71,7 @@ class ScannedImage(QStandardItem):
         image_shape = self.cv2_image.shape
 
         for key in self.thumbnail_sizes:
-            # proportional resize seems to get corrupted, this is visible on image thumbnails coming out skewed.
-            # problem does not manifest if the destination size is 1:1 ratio
-            # TODO: investigate this
+            # sometimes proportional resize seems to get corrupted, this is visible on image thumbnails coming out skewed.
 
             thumb_size = get_thumbnail_proportional_size(image_shape, self.thumbnail_sizes[key])
             thumb_cv2 = cv2.resize(self.cv2_image, thumb_size, interpolation=self.interpolation)
