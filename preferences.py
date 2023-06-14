@@ -1,6 +1,4 @@
-# Python preference interface
-
-
+# Python singleton preference interface
 import toml
 from appdirs import AppDirs
 from pathlib import Path, PurePath
