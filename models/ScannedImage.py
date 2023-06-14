@@ -8,6 +8,7 @@ from PySide6.QtGui import QStandardItem, QImage, QPixmap
 import const
 from detectors.LaplacianBlurDetector import LaplacianBlurDetector
 import logging
+from preferences import prefs
 
 logging.basicConfig(level=const.LOG_LEVEL)
 
@@ -37,7 +38,7 @@ class ScannedImage(QStandardItem):
 
         # analyzed attributes
         self.thumbnails = {}
-        self.thumbnail_sizes = {'small': thumbnail_size_small} #, 'large': thumbnail_size_large}
+        self.thumbnail_sizes = {'small': thumbnail_size_small}  # , 'large': thumbnail_size_large}
         self.laplacian_variance = None
 
         self.setText(self.label)
@@ -88,8 +89,17 @@ class ScannedImage(QStandardItem):
 
     def trash_image(self):
         try:
-            send2trash.send2trash(self.image_path)
-            logging.info("Trashed %s!" % self.image_path)
+            pref = prefs.get_pref(const.PREFS.GLOBAL.NAME, const.PREFS.GLOBAL.ON_REMOVAL_ACTION,
+                                  const.MENU.ON_REMOVAL.TO_TRASH)
+            logging.info("trash_image on %s" % self.image_path)
+
+            if (pref == const.MENU.ON_REMOVAL.DELETE):
+                os.remove(self.image_path)
+                logging.info("DELETED %s!" % self.image_path)
+            else:
+                send2trash.send2trash(self.image_path)
+                logging.info("Trashed %s!" % self.image_path)
+
             return True
         except FileNotFoundError:
             logging.error("Could not trash %s: file not found!" % self.image_path)
