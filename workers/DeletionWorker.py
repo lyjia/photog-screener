@@ -13,9 +13,10 @@ class DeletionWorker(QObject):
     image_deleted = Signal(ScannedImage)
     deletion_complete = Signal()
 
-    def __init__(self, images_to_delete):
+    def __init__(self, images_to_delete, deletion_type):
         super().__init__()
         self.slated = images_to_delete
+        self.deletion_type = deletion_type
         pass
 
     def delete_all(self):
@@ -28,7 +29,7 @@ class DeletionWorker(QObject):
 
             for image in self.slated:
                 logging.info("About to delete %s" % image.image_path)
-                result = image.trash_image()
+                result = image.trash_image(self.deletion_type)
                 if result:
                     self.image_deleted.emit(image)
 

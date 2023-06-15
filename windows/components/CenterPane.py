@@ -6,6 +6,7 @@ from models.ScannedImage import ScannedImage
 from windows.components.ImageList import ImageList
 from windows.dialogs.MassDeleteConfirmation import MassDeleteConfirmation
 from workers.DeletionWorker import DeletionWorker
+from preferences import prefs
 import logging
 logging.basicConfig(level=const.LOG_LEVEL)
 
@@ -65,21 +66,23 @@ class CenterPane(QWidget):
 
     def on_btn_trash_clicked(self):
         slated_for_execution = self.image_list.get_checked_images()
+        deletion_type = prefs().get_pref(const.PREFS.GLOBAL.NAME, const.PREFS.GLOBAL.ON_REMOVAL_ACTION,
+                                const.PREFS.GLOBAL.ON_REMOVAL_ACTION_VALUES.default)
 
         dlg = MassDeleteConfirmation(slated_for_execution)
         clicked = dlg.exec()
 
         #if clicked == QDialogButtonBox.Ok: #doesnt work
         if clicked == 1:
-            self.delete_all_images(slated_for_execution)
+            self.delete_all_images(slated_for_execution, deletion_type)
 
     #####################################
     # image deletion
     #####################################
-    def delete_all_images(self, to_delete):
+    def delete_all_images(self, to_delete, deletion_type):
         self.deletion_thread = QThread()
         self.deletion_thread.setObjectName("Delete images")
-        self.deletion_controller = DeletionWorker(to_delete)
+        self.deletion_controller = DeletionWorker(to_delete, deletion_type)
 
         self.deletion_controller.moveToThread(self.deletion_thread)
 

@@ -87,12 +87,10 @@ class ScannedImage(QStandardItem):
     def get_image(self):
         return cv2.imread(self.image_path)
 
-    def trash_image(self):
+    def trash_image(self, deletion_type):
         try:
-            pref = prefs().get_pref(const.PREFS.GLOBAL.NAME, const.PREFS.GLOBAL.ON_REMOVAL_ACTION,
-                                    const.MENU.ON_REMOVAL.TO_TRASH)
 
-            if (pref == const.MENU.ON_REMOVAL.DELETE):
+            if (deletion_type == const.PREFS.GLOBAL.ON_REMOVAL_ACTION_VALUES.DELETE):
                 os.remove(self.image_path)
                 logging.info("DELETED %s!" % self.image_path)
             else:

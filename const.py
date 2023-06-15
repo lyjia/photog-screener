@@ -35,11 +35,18 @@ class PREFS:
         APPSTYLE = "app style"
         ON_REMOVAL_ACTION = "on removal"
 
+        class ON_REMOVAL_ACTION_VALUES:
+            TO_TRASH = "trash"
+            DELETE = "delete"
+            default = TO_TRASH
+
 
 class MENU:
     class ON_REMOVAL:
         TO_TRASH = "Send to %s" % STR.TRASH
         DELETE = "Delete"
+        corresponding_prefs = {TO_TRASH: PREFS.GLOBAL.ON_REMOVAL_ACTION_VALUES.TO_TRASH,
+                               DELETE:   PREFS.GLOBAL.ON_REMOVAL_ACTION_VALUES.DELETE}
 
         @staticmethod
         def keys():

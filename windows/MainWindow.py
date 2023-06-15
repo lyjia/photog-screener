@@ -57,28 +57,36 @@ class MainWindow(QMainWindow):
     ########################
 
     def create_menus(self):
+        ### File menu
         file_menu = self.menuBar().addMenu("&File")
         file_menu.addAction("&Scan Folder...").triggered.connect(self.on_file_scan_folder_action)
         file_menu.addAction("&Quit").triggered.connect(self.on_file_quit_action)
 
+        ### View Menu
         view_menu = self.menuBar().addMenu("&View")
         view_menu.addAction("&Image Preview/Info")
 
+        ### Options Menu
         options_menu = self.menuBar().addMenu("&Options")
+
+        # On Removal submenu
         on_delete_menu = options_menu.addMenu("When &removing")
         for item in const.MENU.ON_REMOVAL.keys():
-
             # QAction doesn't give us a way to access the parent menu (which we need to uncheck all the other menu items)
             # so we stuff it into an attribute on the instantiated class
             act = on_delete_menu.addAction(item)
             act.setCheckable(True)
             act.__setattr__('parent_menu', on_delete_menu)
             act.triggered.connect(self.on_options_removal_select)
-            if prefs().get_pref(const.PREFS.GLOBAL.NAME, const.PREFS.GLOBAL.ON_REMOVAL_ACTION,
-                                const.MENU.ON_REMOVAL.TO_TRASH) == item:
+            if prefs().get_pref(const.PREFS.GLOBAL.NAME,
+                                const.PREFS.GLOBAL.ON_REMOVAL_ACTION,
+                                const.PREFS.GLOBAL.ON_REMOVAL_ACTION_VALUES.default) == \
+                                    const.MENU.ON_REMOVAL.corresponding_prefs[item]:
                 act.setChecked(True)
 
         options_menu.addSeparator()
+
+        # Theme submenu
         styles_menu = options_menu.addMenu("&Theme")
         for style in QStyleFactory.keys():
             act = styles_menu.addAction(style)
@@ -87,6 +95,7 @@ class MainWindow(QMainWindow):
                 act.setChecked(True)
             act.triggered.connect(self.on_options_theme_select)
 
+        # Help menu
         help_menu = self.menuBar().addMenu("&Help")
         help_menu.addAction("&About...")
 
@@ -191,7 +200,12 @@ class MainWindow(QMainWindow):
     def on_options_removal_select(self):
         me = self.sender()
         target = me.text()
-        prefs().set_pref(const.PREFS.GLOBAL.NAME, const.PREFS.GLOBAL.ON_REMOVAL_ACTION, target)
+        if target == const.MENU.ON_REMOVAL.DELETE:
+            persist = const.PREFS.GLOBAL.ON_REMOVAL_ACTION_VALUES.DELETE
+        else:
+            persist = const.PREFS.GLOBAL.ON_REMOVAL_ACTION_VALUES.TO_TRASH
+
+        prefs().set_pref(const.PREFS.GLOBAL.NAME, const.PREFS.GLOBAL.ON_REMOVAL_ACTION, persist)
         for action in me.parent_menu.children():
             if me is not action:
                 action.setChecked(False)
