@@ -13,8 +13,10 @@ if __name__ == '__main__':
         except RuntimeError:
             app = QCoreApplication.instance()
 
+        # configure preferences interface
         configure( APP.NAME, APP.AUTHOR )
 
+        # load user-selected style
         style = prefs().get_pref(PREFS.GLOBAL.NAME, PREFS.GLOBAL.APPSTYLE)
         if style is not None:
             app.setStyle( style )
