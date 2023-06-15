@@ -6,6 +6,7 @@ from PySide6.QtGui import Qt, QPixmap, QIcon, QAction
 from pathlib import Path
 import const
 from models.ScannedImage import ScannedImage
+from windows.components.QActionWithMenu import QActionWithMenu
 from workers.RecursiveDirectoryScanWorker import RecursiveDirectoryScanWorker
 from windows.components.CenterPane import CenterPane
 from windows.components.FilterBar import FilterBar
@@ -67,8 +68,12 @@ class MainWindow(QMainWindow):
         options_menu = self.menuBar().addMenu("&Options")
         on_delete_menu = options_menu.addMenu("When &removing")
         for item in const.MENU.ON_REMOVAL.keys():
+
+            # QAction doesn't give us a way to access the parent menu (which we need to uncheck all the other menu items)
+            # so we stuff it into an attribute on the instantiated class
             act = on_delete_menu.addAction(item)
             act.setCheckable(True)
+            act.__setattr__('parent_menu', on_delete_menu)
             act.triggered.connect(self.on_options_removal_select)
             if prefs().get_pref(const.PREFS.GLOBAL.NAME, const.PREFS.GLOBAL.ON_REMOVAL_ACTION,
                                 const.MENU.ON_REMOVAL.TO_TRASH) == item:
@@ -173,7 +178,8 @@ class MainWindow(QMainWindow):
 
         if newstyle != self.current_style:
             msgbox = QMessageBox()
-            msgbox.setText("%s must be restarted to apply this style. Do this now?" % const.APP.NAME)
+            msgbox.setText(
+                "%s must be restarted in order to save this change and apply the style. Do this now?" % const.APP.NAME)
             msgbox.setStandardButtons(QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel)
             msgbox.setIcon(QMessageBox.Icon.Question)
             msgbox.setDefaultButton(QMessageBox.StandardButton.Ok)
@@ -182,10 +188,14 @@ class MainWindow(QMainWindow):
                 prefs().set_pref(const.PREFS.GLOBAL.NAME, const.PREFS.GLOBAL.APPSTYLE, newstyle)
                 QCoreApplication.exit(const.APP.EXIT_CODE_RESTART)
 
+    # not your typical event handler
     def on_options_removal_select(self):
-        target = self.sender().text()
+        me = self.sender()
+        target = me.text()
         prefs().set_pref(const.PREFS.GLOBAL.NAME, const.PREFS.GLOBAL.ON_REMOVAL_ACTION, target)
-
+        for action in me.parent_menu.children():
+            if me is not action:
+                action.setChecked(False)
 
     ##########################
     # control actions
