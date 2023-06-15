@@ -99,6 +99,7 @@ class CenterPane(QWidget):
 
     def on_image_deleted(self, image: ScannedImage):
         self.image_deleted.emit(image.image_path)
+        self.image_list.remove_image(image)
 
     def on_deletion_completed(self):
         self.deletion_thread.exit()

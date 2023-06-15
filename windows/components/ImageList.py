@@ -2,13 +2,16 @@ from PySide6.QtCore import QSize, Qt
 from PySide6.QtGui import QStandardItemModel
 from PySide6.QtWidgets import QListWidget, QListView, QAbstractItemView
 
+import const
+
 
 class ImageList(QListView):
 
     def __init__(self):
         super().__init__()
         self.model = QStandardItemModel(self)
-        self.image_list_hash = None
+        self.image_list_hash = {}
+
         self.setViewMode(QListView.ViewMode.IconMode)
         self.setGridSize(QSize(256, 256))
         self.setIconSize(QSize(192, 192))
@@ -51,3 +54,8 @@ class ImageList(QListView):
                     toret.append(item)
 
         return toret
+
+    def remove_image(self, image):
+        for cat in const.CATEGORY.keys():
+            if image in self.image_list_hash[cat]:
+                self.image_list_hash[cat].remove(image)
