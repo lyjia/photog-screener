@@ -28,7 +28,7 @@ class DeletionWorker(QObject):
 
             for image in self.slated:
                 logging.info("About to delete %s" % image.image_path)
-                result = image.trash_image
+                result = image.trash_image()
                 if result:
                     self.image_deleted.emit(image)
 

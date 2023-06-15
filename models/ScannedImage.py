@@ -89,9 +89,8 @@ class ScannedImage(QStandardItem):
 
     def trash_image(self):
         try:
-            pref = prefs.get_pref(const.PREFS.GLOBAL.NAME, const.PREFS.GLOBAL.ON_REMOVAL_ACTION,
-                                  const.MENU.ON_REMOVAL.TO_TRASH)
-            logging.info("trash_image on %s" % self.image_path)
+            pref = prefs().get_pref(const.PREFS.GLOBAL.NAME, const.PREFS.GLOBAL.ON_REMOVAL_ACTION,
+                                    const.MENU.ON_REMOVAL.TO_TRASH)
 
             if (pref == const.MENU.ON_REMOVAL.DELETE):
                 os.remove(self.image_path)
@@ -104,6 +103,7 @@ class ScannedImage(QStandardItem):
         except FileNotFoundError:
             logging.error("Could not trash %s: file not found!" % self.image_path)
             return False
-        except:
-            logging.error("Could not trash %s: unknown error!" % self.image_path)
+        except Exception as ex:
+            msg = getattr(ex, 'message', repr(ex))
+            logging.error("Could not trash %s: %s" % (self.image_path, msg))
             return False
