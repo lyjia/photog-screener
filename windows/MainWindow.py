@@ -6,7 +6,6 @@ from PySide6.QtGui import Qt, QPixmap, QIcon, QAction
 from pathlib import Path
 import const
 from models.ScannedImage import ScannedImage
-from windows.components.QActionWithMenu import QActionWithMenu
 from workers.RecursiveDirectoryScanWorker import RecursiveDirectoryScanWorker
 from windows.components.CenterPane import CenterPane
 from windows.components.FilterBar import FilterBar
