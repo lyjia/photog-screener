@@ -3,8 +3,8 @@ from PySide6.QtCore import Signal, QObject
 import const
 from models.ScannedImage import ScannedImage
 import logging
-logging.basicConfig(level=const.LOG_LEVEL)
 
+logging.basicConfig(level=const.LOG_LEVEL)
 
 
 class DeletionWorker(QObject):
