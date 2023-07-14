@@ -69,6 +69,7 @@ atlassian-ide-plugin.xml
 # other idea junk
 .idea/misc.xml
 .idea/other.xml
+.idea/modules.xml
 
 # Crashlytics plugin (for Android Studio and IntelliJ)
 com_crashlytics_export_strings.xml
