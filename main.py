@@ -2,7 +2,8 @@ import sys
 
 from PySide6.QtCore import QCoreApplication
 from PySide6.QtWidgets import QApplication
-from windows.MainWindow import MainWindow
+
+from controllers.MainWindowController import MainWindowController
 from const import APP, PREFS
 from preferences import configure, prefs
 
@@ -22,8 +23,8 @@ if __name__ == '__main__':
             app.setStyle( style )
 
         # Create and show the form
-        form = MainWindow( style=app.style() )
-        form.show()
+        controller = MainWindowController(app)
+        controller.start_er_up()
 
         # Run the main Qt loop
         exit_code = app.exec()
