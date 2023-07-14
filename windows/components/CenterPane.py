@@ -1,20 +1,19 @@
-from PySide6.QtCore import QThread, Signal
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QDialogButtonBox
+import logging
+
+from PySide6.QtCore import Signal
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton
 
 import const
 from models.ScannedImage import ScannedImage
+from preferences import prefs
 from windows.components.ImageList import ImageList
 from windows.dialogs.MassDeleteConfirmation import MassDeleteConfirmation
-from workers.DeletionWorker import DeletionWorker
-from preferences import prefs
-import logging
+
 logging.basicConfig(level=const.LOG_LEVEL)
 
-class CenterPane(QWidget):
 
-    deletion_started = Signal(int)
-    image_deleted = Signal(str)
-    deletion_complete = Signal(int)
+class CenterPane(QWidget):
+    user_requested_deletion = Signal(ScannedImage, str)
 
     def __init__(self):
         super().__init__()
@@ -70,11 +69,11 @@ class CenterPane(QWidget):
     def on_btn_trash_clicked(self):
         slated_for_execution = self.image_list.get_checked_images()
         deletion_type = prefs().get_pref(const.PREFS.GLOBAL.NAME, const.PREFS.GLOBAL.ON_REMOVAL_ACTION,
-                                const.PREFS.GLOBAL.ON_REMOVAL_ACTION_VALUES.default)
+                                         const.PREFS.GLOBAL.ON_REMOVAL_ACTION_VALUES.default)
 
         dlg = MassDeleteConfirmation(slated_for_execution)
         clicked = dlg.exec()
 
-        #if clicked == QDialogButtonBox.Ok: #doesnt work
+        # if clicked == QDialogButtonBox.Ok: #doesnt work
         if clicked == 1:
-            self.delete_all_images(slated_for_execution, deletion_type)
+            self.user_requested_deletion.emit(slated_for_execution, deletion_type)

@@ -23,12 +23,12 @@ class MassDeleteConfirmation(QDialog):
 
         if prefs().get_pref(PREFS.GLOBAL.NAME, PREFS.GLOBAL.ON_REMOVAL_ACTION,
                             PREFS.GLOBAL.ON_REMOVAL_ACTION_VALUES.default) == PREFS.GLOBAL.ON_REMOVAL_ACTION_VALUES.TO_TRASH:
-            #self.setWindowIcon( QPixmap(QMessageBox.Icon.Warning) )
-            self.setWindowTitle("Are you sure?")
+            #self.setIcon( QMessageBox.Icon.Warning )
+            #self.setWindowTitle("Are you sure?")
             message = QLabel(
                 "You are about to send all checked images to the %s, are you sure you wish to do this?" % STR.TRASH)
         else:
-            #self.setWindowIcon( QPixmap(QMessageBox.Icon.Critical) )
+            #self.setIcon( QMessageBox.Icon.Critical )
             self.setWindowTitle("Are you ABSOLUTELY sure?")
             message = QLabel("You are about to DELETE ALL CHECKED IMAGES, are you sure you wish to do this?")
 

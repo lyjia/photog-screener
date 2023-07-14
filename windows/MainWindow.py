@@ -17,7 +17,7 @@ logging.basicConfig(level=const.LOG_LEVEL)
 
 class MainWindow(QMainWindow):
     user_requested_dir_scan = Signal(str)
-    user_requested_deletion = Signal()
+    user_requested_deletion = Signal(ScannedImage, str)
     set_up_for_new_run = Signal()
 
     def __init__(self, parent=None, style=None):
@@ -131,9 +131,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.center_pane)
 
         # set up event handlers for image deletion
-        self.center_pane.deletion_started.connect(self.on_deletion_started)
-        self.center_pane.image_deleted.connect(self.on_image_deleted)
-        self.center_pane.deletion_complete.connect(self.on_deletion_finished)
+        self.center_pane.user_requested_deletion.connect(self.on_user_requested_deletion)
 
     #############################
     # UI actions
@@ -205,6 +203,9 @@ class MainWindow(QMainWindow):
         logging.info("User changed filter to %s" % label)
         self.central_image_list.update_viewed_filter(label)
 
+    def on_user_requested_deletion(self, slated_for_execution, deletion_type):
+        # pass the event on to the controller
+        self.user_requested_deletion.emit(slated_for_execution, deletion_type)
     ##########################
     # controller interface
     ##########################
