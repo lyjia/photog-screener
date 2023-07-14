@@ -49,6 +49,7 @@ cmake-build-*/
 
 # File-based project format
 *.iws
+*.iml
 
 # IntelliJ
 out/
@@ -64,6 +65,10 @@ atlassian-ide-plugin.xml
 
 # SonarLint plugin
 .idea/sonarlint/
+
+# other idea junk
+.idea/misc.xml
+.idea/other.xml
 
 # Crashlytics plugin (for Android Studio and IntelliJ)
 com_crashlytics_export_strings.xml
