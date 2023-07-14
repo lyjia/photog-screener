@@ -34,11 +34,14 @@ class PREFS:
         NAME = "global"
         APPSTYLE = "app style"
         ON_REMOVAL_ACTION = "on removal"
+
         class ON_REMOVAL_ACTION_VALUES:
             TO_TRASH = "trash"
             DELETE = "delete"
             default = TO_TRASH
+
         LAST_SCAN_DIR = "last scan dir"
+
 
 class MENU:
     class ON_REMOVAL:
@@ -50,6 +53,7 @@ class MENU:
         @staticmethod
         def keys():
             return [MENU.ON_REMOVAL.TO_TRASH, MENU.ON_REMOVAL.DELETE]
+
 
 class DEFAULTS:
     LAST_SCAN_DIR = "T:\\PhotogScreenerTestFolder"

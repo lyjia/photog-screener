@@ -5,6 +5,7 @@ import const
 from models.ScannedImage import ScannedImage
 from windows.MainWindow import MainWindow
 from windows.components.FilterBar import FilterBar
+from workers.DeletionWorker import DeletionWorker
 from workers.RecursiveDirectoryScanWorker import RecursiveDirectoryScanWorker
 import logging
 from preferences import prefs
@@ -123,6 +124,37 @@ class MainWindowController():
 
 
     def on_scan_error(self, message):
-        box = QMessageBox()
-        box.setText(message)
-        box.exec()
+        self.main_win.popup_error_box(message)
+
+    #####################################
+    # image deletion
+    #####################################
+    def delete_all_images(self, to_delete, deletion_type):
+        self.deletion_thread = QThread()
+        self.deletion_thread.setObjectName("Delete images")
+        self.deletion_wrkr = DeletionWorker(to_delete, deletion_type)
+
+        self.deletion_wrkr.moveToThread(self.deletion_thread)
+
+        self.deletion_thread.started.connect(self.deletion_wrkr.delete_all)
+
+        self.deletion_wrkr.deletion_started.connect(self.on_deletion_started)
+        self.deletion_wrkr.deletion_error.connect(self.on_deletion_error)
+        self.deletion_wrkr.deletion_complete.connect(self.on_deletion_completed)
+        self.deletion_wrkr.image_deleted.connect(self.on_image_deleted)
+
+        self.deletion_thread.start()
+
+    def on_deletion_started(self, count):
+        self.deletion_started.emit(count)
+
+    def on_deletion_error(self, str):
+        logging.error(str)
+
+    def on_image_deleted(self, image: ScannedImage):
+        self.image_deleted.emit(image.image_path)
+        self.image_list.remove_image(image)
+
+    def on_deletion_completed(self):
+        self.deletion_thread.exit()
+        self.deletion_complete.emit(0)

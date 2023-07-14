@@ -1,24 +1,22 @@
-from PySide6.QtCore import QThread, QCoreApplication, Signal
-from PySide6.QtWidgets import QMainWindow, QDockWidget, QListWidget, QFileDialog, QProgressBar, QLabel, QMessageBox, \
-    QStyleFactory
-from PySide6.QtGui import Qt, QPixmap, QIcon, QAction
-
+import logging
 from pathlib import Path
+
+from PySide6.QtCore import QCoreApplication, Signal
+from PySide6.QtGui import Qt, QPixmap, QIcon
+from PySide6.QtWidgets import QMainWindow, QDockWidget, QFileDialog, QProgressBar, QLabel, QMessageBox, \
+    QStyleFactory
+
 import const
-from models.ScannedImage import ScannedImage
-from workers.RecursiveDirectoryScanWorker import RecursiveDirectoryScanWorker
+from preferences import prefs
 from windows.components.CenterPane import CenterPane
 from windows.components.FilterBar import FilterBar
-import logging
-
-from windows.components.ImageList import ImageList
-from preferences import prefs
 
 logging.basicConfig(level=const.LOG_LEVEL)
 
 
 class MainWindow(QMainWindow):
     user_requested_dir_scan = Signal(str)
+    user_requested_deletion = Signal()
     set_up_for_new_run = Signal()
 
     def __init__(self, parent=None, style=None):
@@ -96,11 +94,16 @@ class MainWindow(QMainWindow):
         help_menu = self.menuBar().addMenu("&Help")
         help_menu.addAction("&About...")
 
+        # Debug menu
+        debug_menu = self.menuBar().addMenu("&Debug")
+        act = debug_menu.addAction("Show an error popup")
+        act.triggered.connect(self.on_debug_show_error_popup)
+
+
     def create_toolbars(self):
         fileToolbar = self.addToolBar("File")
 
     def create_dock_widgets(self):
-
         # create the filter widget
         dockWidget = QDockWidget("Filters", self)
         dockWidget.setAllowedAreas(Qt.LeftDockWidgetArea)
@@ -191,6 +194,9 @@ class MainWindow(QMainWindow):
             if me is not action:
                 action.setChecked(False)
 
+    def on_debug_show_error_popup(self):
+        self.popup_error_box("OMG!! YOUR HAIR IS ON FIRE!!!!!")
+
     ##########################
     # control actions
     ##########################
@@ -226,6 +232,14 @@ class MainWindow(QMainWindow):
     def update_image_lists(self, previous_scan):
         self.central_image_list.update_image_lists(previous_scan)
         self.central_image_list.update_viewed_filter(self.filter_bar.get_selected_item())
+
+    def popup_error_box(self, text, title=const.APP.NAME, icon=QMessageBox.Warning):
+        box = QMessageBox(self)
+
+        box.setWindowTitle(title)
+        box.setText(text)
+        box.setIcon(icon)
+        box.exec()
 
     #################################
     # deletion events

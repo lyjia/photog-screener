@@ -75,35 +75,3 @@ class CenterPane(QWidget):
         #if clicked == QDialogButtonBox.Ok: #doesnt work
         if clicked == 1:
             self.delete_all_images(slated_for_execution, deletion_type)
-
-    #####################################
-    # image deletion
-    #####################################
-    def delete_all_images(self, to_delete, deletion_type):
-        self.deletion_thread = QThread()
-        self.deletion_thread.setObjectName("Delete images")
-        self.deletion_controller = DeletionWorker(to_delete, deletion_type)
-
-        self.deletion_controller.moveToThread(self.deletion_thread)
-
-        self.deletion_thread.started.connect(self.deletion_controller.delete_all)
-        self.deletion_controller.deletion_started.connect(self.on_deletion_started)
-        self.deletion_controller.deletion_error.connect(self.on_deletion_error)
-        self.deletion_controller.deletion_complete.connect(self.on_deletion_completed)
-        self.deletion_controller.image_deleted.connect(self.on_image_deleted)
-
-        self.deletion_thread.start()
-
-    def on_deletion_started(self, count):
-        self.deletion_started.emit(count)
-
-    def on_deletion_error(self, str):
-        logging.error(str)
-
-    def on_image_deleted(self, image: ScannedImage):
-        self.image_deleted.emit(image.image_path)
-        self.image_list.remove_image(image)
-
-    def on_deletion_completed(self):
-        self.deletion_thread.exit()
-        self.deletion_complete.emit(0)
