@@ -35,14 +35,8 @@ class MainWindow(QMainWindow):
         self.current_style = style
 
         # setup
-        self.directory_scanner = None
-        self.scanner_thread = None
-        self.deleter_thread = None
         self.status_label = None
         self.progress_bar = None
-
-        self.previous_scan = None
-        self.previous_counts = None
 
         self.filter_bar = None
         self.central_image_list = None
@@ -153,12 +147,13 @@ class MainWindow(QMainWindow):
     def on_file_scan_folder_action(self):
         dialog = QFileDialog(self)
         dialog.setFileMode(QFileDialog.FileMode.Directory)
-        starting_dir = prefs().get_pref(const.PREFS.GLOBAL.LAST_SCAN_DIR, const.DEFAULTS.LAST_SCAN_DIR)
+        starting_dir = prefs().get_pref(const.PREFS.GLOBAL.NAME, const.PREFS.GLOBAL.LAST_SCAN_DIR,
+                                        const.DEFAULTS.LAST_SCAN_DIR)
         dialog.setDirectory(starting_dir)
 
         if dialog.exec_():
             folderName = dialog.selectedFiles()[0]
-            prefs().set_pref(const.PREFS.GLOBAL.LAST_SCAN_DIR, folderName)
+            prefs().set_pref(const.PREFS.GLOBAL.NAME, const.PREFS.GLOBAL.LAST_SCAN_DIR, folderName)
 
             self.user_requested_dir_scan.emit(folderName)
         else:
@@ -221,6 +216,7 @@ class MainWindow(QMainWindow):
 
     def clear_status_label(self):
         self.status_label.setText("")
+
     def update_filter_bar_counts(self, previous_counts):
         self.filter_bar.update_counts(previous_counts)
 

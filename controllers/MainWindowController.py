@@ -76,10 +76,10 @@ class MainWindowController():
         self.scanner_thread.start()
 
     def set_up_for_new_run(self, path=None):
-        self.main_win.set_up_for_new_run(path)
+        # self.main_win.set_up_for_new_run(path)
         self.previous_scan, self.previous_counts = create_default_scan_structs(path)
 
-        self.main_win.update_filter_bar_count(self.previous_counts)
+        self.main_win.update_filter_bar_counts(self.previous_counts)
         self.main_win.update_image_lists(self.previous_scan)
         self.main_win.update_filter_bar_path(path)
 
@@ -110,16 +110,15 @@ class MainWindowController():
             self.previous_scan[const.CATEGORY.ERRORED].append(scanned_image)
             self.previous_counts[const.CATEGORY.ERRORED] += 1
 
-        self.filter_bar.update_counts(self.previous_counts)
+        self.main_win.update_filter_bar_counts(self.previous_counts)
 
 
     def on_scan_complete(self):
         self.main_win.set_enabled(True)
         self.main_win.set_progress_bar_visibility(False)
 
-        self.central_image_list.update_image_lists(self.previous_scan)
-        self.central_image_list.update_viewed_filter(self.filter_bar.get_selected_item())
-        self.status_label.setText("Finished scanning %i images." % len(self.previous_scan[const.CATEGORY.ALL]))
+        self.main_win.update_image_lists(self.previous_scan)
+        self.main_win.update_status_label("Finished scanning %i images." % len(self.previous_scan[const.CATEGORY.ALL]))
         self.scanner_thread.exit()
 
 
