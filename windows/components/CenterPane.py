@@ -55,6 +55,9 @@ class CenterPane(QWidget):
     def get_image_list_widget(self):
         return self.image_list
 
+    def remove_image_from_image_list(self, image: ScannedImage):
+        self.image_list.remove_image(image)
+
     #####################
     # event handlers
     #####################

@@ -7,6 +7,7 @@ from PySide6.QtWidgets import QMainWindow, QDockWidget, QFileDialog, QProgressBa
     QStyleFactory
 
 import const
+from models.ScannedImage import ScannedImage
 from preferences import prefs
 from windows.components.CenterPane import CenterPane
 from windows.components.FilterBar import FilterBar
@@ -250,7 +251,10 @@ class MainWindow(QMainWindow):
         self.progress_bar.setValue(0)
         self.progress_bar.show()
 
-    def on_image_deleted(self, path):
+    def on_image_deleted(self, image: ScannedImage):
+        self.center_pane.remove_image_from_image_list(image)
+
+        path = image.path
         self.progress_bar.setValue(self.progress_bar.value() + 1)
         self.status_label.setText("Deleted %s!" % path)
 

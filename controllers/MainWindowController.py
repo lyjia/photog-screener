@@ -32,6 +32,8 @@ def create_default_scan_structs(path):
 
 class MainWindowController():
     def __init__(self, app):
+        self.deletion_wrkr = None
+        self.deletion_thread = None
         self.previous_counts = None
         self.previous_scan = None
         self.directory_scanner = None
@@ -130,6 +132,7 @@ class MainWindowController():
     # image deletion
     #####################################
     def delete_all_images(self, to_delete, deletion_type):
+        self.main_win.set_enabled(False)
         self.deletion_thread = QThread()
         self.deletion_thread.setObjectName("Delete images")
         self.deletion_wrkr = DeletionWorker(to_delete, deletion_type)
@@ -146,15 +149,15 @@ class MainWindowController():
         self.deletion_thread.start()
 
     def on_deletion_started(self, count):
-        self.deletion_started.emit(count)
+        self.on_deletion_started(count)
 
     def on_deletion_error(self, str):
         logging.error(str)
 
     def on_image_deleted(self, image: ScannedImage):
-        self.image_deleted.emit(image.image_path)
-        self.image_list.remove_image(image)
+        self.main_win.on_image_deleted(image.image_path)
 
     def on_deletion_completed(self):
         self.deletion_thread.exit()
-        self.deletion_complete.emit(0)
+        self.main_win.set_enabled(True)
+        self.main_win.on_deletion_finished(0)
