@@ -17,7 +17,7 @@ logging.basicConfig(level=const.LOG_LEVEL)
 
 class MainWindow(QMainWindow):
     user_requested_dir_scan = Signal(str)
-    user_requested_deletion = Signal(ScannedImage, str)
+    user_requested_deletion = Signal(object, str) #object is a list of ScannedImage
     set_up_for_new_run = Signal()
 
     def __init__(self, parent=None, style=None):

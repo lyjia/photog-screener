@@ -13,7 +13,7 @@ logging.basicConfig(level=const.LOG_LEVEL)
 
 
 class CenterPane(QWidget):
-    user_requested_deletion = Signal(ScannedImage, str)
+    user_requested_deletion = Signal(object, str) #object is a list of ScannedImage
 
     def __init__(self):
         super().__init__()
@@ -76,4 +76,5 @@ class CenterPane(QWidget):
 
         # if clicked == QDialogButtonBox.Ok: #doesnt work
         if clicked == 1:
+            logging.info("CenterPane about to dispatch request for deletion for %i images" % len(slated_for_execution))
             self.user_requested_deletion.emit(slated_for_execution, deletion_type)

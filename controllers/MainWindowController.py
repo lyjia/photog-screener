@@ -131,6 +131,8 @@ class MainWindowController():
     #####################################
     # image deletion
     #####################################
+    def on_user_requested_deletion(self, to_delete, deletion_type):
+        self.deletion_thread(to_delete, deletion_type)
     def delete_all_images(self, to_delete, deletion_type):
         self.main_win.set_enabled(False)
         self.deletion_thread = QThread()
