@@ -13,7 +13,7 @@ logging.basicConfig(level=const.LOG_LEVEL)
 
 
 class CenterPane(QWidget):
-    user_requested_deletion = Signal(object, str) #object is a list of ScannedImage
+    user_requested_deletion = Signal(object, str)  # object is a list of ScannedImage
 
     def __init__(self):
         super().__init__()
@@ -24,9 +24,6 @@ class CenterPane(QWidget):
 
         self.button_pane_right = QHBoxLayout()
         self.button_pane_left = QHBoxLayout()
-
-        self.deletion_thread = None
-        self.deletion_controller = None
 
         self.btn_trash = QPushButton("&Remove")
         self.btn_checkall = QPushButton("&Check all")
@@ -56,6 +53,9 @@ class CenterPane(QWidget):
 
     def remove_image_from_image_list(self, image: ScannedImage):
         self.image_list.remove_image(image)
+
+    def refresh_image_list(self):
+        self.image_list.update_image_lists()
 
     #####################
     # event handlers

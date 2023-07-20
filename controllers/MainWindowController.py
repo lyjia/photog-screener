@@ -44,6 +44,7 @@ class MainWindowController():
     def start_er_up(self):
         self.main_win = MainWindow(style=self.qapp.style())
         self.main_win.user_requested_dir_scan.connect(self.on_user_request_dir_scan)
+        self.main_win.user_requested_deletion.connect(self.on_user_requested_deletion)
         self.main_win.set_up_for_new_run.connect(self.set_up_for_new_run)
         self.main_win.show()
 
@@ -86,11 +87,9 @@ class MainWindowController():
         self.main_win.update_image_lists(self.previous_scan)
         self.main_win.update_filter_bar_path(path)
 
-
     def on_scan_file_found(self, file_path, x, count):
         self.main_win.update_status_label("Scanning %s..." % file_path)
         self.main_win.update_progress_bar(x, count)
-
 
     def on_scan_file_scanned(self, path, scanned_image: ScannedImage):
         # there seems to be an issue in passing objects between threads, because sometimes
@@ -115,7 +114,6 @@ class MainWindowController():
 
         self.main_win.update_filter_bar_counts(self.previous_counts)
 
-
     def on_scan_complete(self):
         self.main_win.set_enabled(True)
         self.main_win.set_progress_bar_visibility(False)
@@ -124,7 +122,6 @@ class MainWindowController():
         self.main_win.update_status_label("Finished scanning %i images." % len(self.previous_scan[const.CATEGORY.ALL]))
         self.scanner_thread.exit()
 
-
     def on_scan_error(self, message):
         self.main_win.popup_error_box(message)
 
@@ -132,7 +129,8 @@ class MainWindowController():
     # image deletion
     #####################################
     def on_user_requested_deletion(self, to_delete, deletion_type):
-        self.deletion_thread(to_delete, deletion_type)
+        self.delete_all_images(to_delete, deletion_type)
+
     def delete_all_images(self, to_delete, deletion_type):
         self.main_win.set_enabled(False)
         self.deletion_thread = QThread()
@@ -151,13 +149,13 @@ class MainWindowController():
         self.deletion_thread.start()
 
     def on_deletion_started(self, count):
-        self.on_deletion_started(count)
+        pass
 
     def on_deletion_error(self, str):
         logging.error(str)
 
     def on_image_deleted(self, image: ScannedImage):
-        self.main_win.on_image_deleted(image.image_path)
+        self.main_win.on_image_deleted(image)
 
     def on_deletion_completed(self):
         self.deletion_thread.exit()

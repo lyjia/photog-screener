@@ -17,7 +17,7 @@ logging.basicConfig(level=const.LOG_LEVEL)
 
 class MainWindow(QMainWindow):
     user_requested_dir_scan = Signal(str)
-    user_requested_deletion = Signal(object, str) #object is a list of ScannedImage
+    user_requested_deletion = Signal(object, str)  # object is a list of ScannedImage
     set_up_for_new_run = Signal()
 
     def __init__(self, parent=None, style=None):
@@ -44,7 +44,7 @@ class MainWindow(QMainWindow):
         self.create_menus()
         self.create_dock_widgets()
         self.create_statusbar()
-        self.set_up_central_image_list()
+        self.create_center_pane()
 
         self.set_up_for_new_run.emit()
 
@@ -100,7 +100,6 @@ class MainWindow(QMainWindow):
         act = debug_menu.addAction("Show an error popup")
         act.triggered.connect(self.on_debug_show_error_popup)
 
-
     def create_toolbars(self):
         fileToolbar = self.addToolBar("File")
 
@@ -125,7 +124,7 @@ class MainWindow(QMainWindow):
 
         self.progress_bar.hide()
 
-    def set_up_central_image_list(self):
+    def create_center_pane(self):
         self.center_pane = CenterPane()
         self.central_image_list = self.center_pane.get_image_list_widget()
         self.setCentralWidget(self.center_pane)
@@ -206,6 +205,7 @@ class MainWindow(QMainWindow):
     def on_user_requested_deletion(self, slated_for_execution, deletion_type):
         # pass the event on to the controller
         self.user_requested_deletion.emit(slated_for_execution, deletion_type)
+
     ##########################
     # controller interface
     ##########################
@@ -254,12 +254,12 @@ class MainWindow(QMainWindow):
 
     def on_image_deleted(self, image: ScannedImage):
         self.center_pane.remove_image_from_image_list(image)
-
-        path = image.path
+        path = image.image_path
         self.progress_bar.setValue(self.progress_bar.value() + 1)
         self.status_label.setText("Deleted %s!" % path)
 
     def on_deletion_finished(self, count):
+        self.center_pane.refresh_image_list()
         self.set_enabled(True)
         self.status_label.setText("Deleted %i images." % count)
         self.progress_bar.hide()

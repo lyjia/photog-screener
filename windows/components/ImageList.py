@@ -3,6 +3,7 @@ from PySide6.QtGui import QStandardItemModel
 from PySide6.QtWidgets import QListWidget, QListView, QAbstractItemView
 
 import const
+from models.ScannedImage import ScannedImage
 
 
 class ImageList(QListView):
@@ -11,6 +12,7 @@ class ImageList(QListView):
         super().__init__()
         self.model = QStandardItemModel(self)
         self.image_list_hash = {}
+        self.viewed_filter = None
 
         self.setViewMode(QListView.ViewMode.IconMode)
         self.setGridSize(QSize(256, 256))
@@ -24,13 +26,20 @@ class ImageList(QListView):
     def update_image_lists(self, image_list_hash):
         self.image_list_hash = image_list_hash
 
-    def update_viewed_filter(self, filter_name):
+    def update_viewed_filter(self, filter_name = None):
         self.model.clear()
+
+        if filter_name is None:
+            if self.viewed_filter is not None:
+                filter_name = self.viewed_filter
+            else:
+                raise("viewed_filter must be set!")
 
         for item in self.image_list_hash[filter_name]:
             self.model.appendRow(item)
 
         self.setModel(self.model)
+        self.viewed_filter = filter_name
 
     def set_all_checked(self):
         for i in range(self.model.rowCount()):
@@ -55,7 +64,9 @@ class ImageList(QListView):
 
         return toret
 
-    def remove_image(self, image):
+    def remove_image(self, deleted: ScannedImage):
         for cat in const.CATEGORY.keys():
-            if image in self.image_list_hash[cat]:
-                self.image_list_hash[cat].remove(image)
+            for image in self.image_list_hash[cat]:
+                if deleted.id == image.id:
+                    self.image_list_hash[cat].remove(image)
+                    break

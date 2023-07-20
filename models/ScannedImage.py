@@ -1,5 +1,7 @@
 import math
 import os
+import uuid
+
 import cv2
 import numpy as np
 import send2trash
@@ -47,6 +49,7 @@ class ScannedImage(QStandardItem):
         self.setDragEnabled(False)
         self.setDropEnabled(False)
         self.setCheckable(True)
+        self.id = str(uuid.uuid4())
 
         # other attrs
         self.error = None
